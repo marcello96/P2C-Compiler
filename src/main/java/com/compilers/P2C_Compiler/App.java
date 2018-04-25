@@ -6,8 +6,6 @@ import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-
-import com.compilers.P2C_Compiler.DrinkParser.DrinkSentenceContext;
 /**
  * Hello world!
  *
@@ -31,9 +29,17 @@ public class App
 	    System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 	}
 	
+	private static void doTest(String _command) {
+	  System.out.println(_command);
+	  printDrink(_command);
+	}
     public static void main( String[] args )
     {
-    	String str = "1";
+      doTest("let a : array[10] of int;");
+      doTest("let _a12 : array[10] of int;");
+      doTest("let a : int;");
+      doTest("let _a12 : int;");
+    	String str = "";
     	Scanner s = new Scanner(System.in);
     	while(!str.equals("exit")) {
     		str = s.nextLine();
