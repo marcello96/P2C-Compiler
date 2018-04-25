@@ -17,19 +17,24 @@ public class P2CParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		LET=1, INT=2, DOUBLE=3, FLOAT=4, CHAR=5, BOOL=6, OF=7, ARRAY=8, UNDERLINE=9, 
-		INT_NUMBER=10, DEC_NUMER=11, NUMBER=12, LETTER=13, COLON=14, LEFT_SQ_BRACKET=15, 
-		RIGHT_SQ_BRACKET=16, LEFT_BRACKET=17, RIGHT_BRACKET=18, WHITESPACE=19;
+		T__0=1, LET=2, INT=3, DOUBLE=4, FLOAT=5, CHAR=6, BOOL=7, OF=8, ARRAY=9, 
+		UNDERLINE=10, LEFT_SQ_BRACKET=11, RIGHT_SQ_BRACKET=12, LEFT_BRACKET=13, 
+		RIGHT_BRACKET=14, ASSIGNMENT=15, ADD_OPERATORS=16, MUL_OPERATORS=17, COLON=18, 
+		SEMICOLON=19, IDENT=20, FLOATING_CONSTANT=21, INTEGER_CONSTANT=22, WHITESPACE=23, 
+		BLOCK_COMMENT=24, LINE_COMMENT=25;
 	public static final String[] tokenNames = {
-		"<INVALID>", "'let'", "'int'", "'double'", "'float'", "'char'", "'bool'", 
-		"'of'", "'array'", "'_'", "INT_NUMBER", "DEC_NUMER", "NUMBER", "LETTER", 
-		"':'", "'['", "']'", "'('", "')'", "WHITESPACE"
+		"<INVALID>", "'-'", "'let'", "'int'", "'double'", "'float'", "'char'", 
+		"'bool'", "'of'", "'array'", "'_'", "'['", "']'", "'('", "')'", "'='", 
+		"ADD_OPERATORS", "MUL_OPERATORS", "':'", "';'", "IDENT", "FLOATING_CONSTANT", 
+		"INTEGER_CONSTANT", "WHITESPACE", "BLOCK_COMMENT", "LINE_COMMENT"
 	};
 	public static final int
-		RULE_varDeclaration = 0, RULE_text = 1, RULE_ident = 2, RULE_type = 3, 
-		RULE_array = 4;
+		RULE_program = 0, RULE_varDeclaration = 1, RULE_identifier = 2, RULE_type = 3, 
+		RULE_primitiveType = 4, RULE_array = 5, RULE_constant = 6, RULE_expression = 7, 
+		RULE_term = 8, RULE_factor = 9;
 	public static final String[] ruleNames = {
-		"varDeclaration", "text", "ident", "type", "array"
+		"program", "varDeclaration", "identifier", "type", "primitiveType", "array", 
+		"constant", "expression", "term", "factor"
 	};
 
 	@Override
@@ -51,18 +56,80 @@ public class P2CParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+	public static class ProgramContext extends ParserRuleContext {
+		public TerminalNode SEMICOLON() { return getToken(P2CParser.SEMICOLON, 0); }
+		public VarDeclarationContext varDeclaration() {
+			return getRuleContext(VarDeclarationContext.class,0);
+		}
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public ProgramContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_program; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterProgram(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitProgram(this);
+		}
+	}
+
+	public final ProgramContext program() throws RecognitionException {
+		ProgramContext _localctx = new ProgramContext(_ctx, getState());
+		enterRule(_localctx, 0, RULE_program);
+		try {
+			setState(26);
+			switch (_input.LA(1)) {
+			case LET:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(20); varDeclaration();
+				setState(21); match(SEMICOLON);
+				}
+				break;
+			case T__0:
+			case LEFT_BRACKET:
+			case IDENT:
+			case FLOATING_CONSTANT:
+			case INTEGER_CONSTANT:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(23); expression();
+				setState(24); match(SEMICOLON);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
 	public static class VarDeclarationContext extends ParserRuleContext {
-		public IdentContext ident() {
-			return getRuleContext(IdentContext.class,0);
+		public ConstantContext constant() {
+			return getRuleContext(ConstantContext.class,0);
 		}
 		public TerminalNode COLON() { return getToken(P2CParser.COLON, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
-		public TerminalNode LET() { return getToken(P2CParser.LET, 0); }
-		public ArrayContext array() {
-			return getRuleContext(ArrayContext.class,0);
+		public IdentifierContext identifier() {
+			return getRuleContext(IdentifierContext.class,0);
 		}
+		public TerminalNode ASSIGNMENT() { return getToken(P2CParser.ASSIGNMENT, 0); }
+		public TerminalNode LET() { return getToken(P2CParser.LET, 0); }
 		public VarDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -79,23 +146,24 @@ public class P2CParser extends Parser {
 
 	public final VarDeclarationContext varDeclaration() throws RecognitionException {
 		VarDeclarationContext _localctx = new VarDeclarationContext(_ctx, getState());
-		enterRule(_localctx, 0, RULE_varDeclaration);
+		enterRule(_localctx, 2, RULE_varDeclaration);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(10); match(LET);
-			setState(11); ident();
-			setState(12); match(COLON);
-			setState(14);
+			setState(28); match(LET);
+			setState(29); identifier();
+			setState(30); match(COLON);
+			setState(31); type();
+			setState(34);
 			_la = _input.LA(1);
-			if (_la==ARRAY) {
+			if (_la==ASSIGNMENT) {
 				{
-				setState(13); array();
+				setState(32); match(ASSIGNMENT);
+				setState(33); constant();
 				}
 			}
 
-			setState(16); type();
 			}
 		}
 		catch (RecognitionException re) {
@@ -109,137 +177,29 @@ public class P2CParser extends Parser {
 		return _localctx;
 	}
 
-	public static class TextContext extends ParserRuleContext {
-		public List<TerminalNode> LETTER() { return getTokens(P2CParser.LETTER); }
-		public TerminalNode LETTER(int i) {
-			return getToken(P2CParser.LETTER, i);
-		}
-		public TextContext(ParserRuleContext parent, int invokingState) {
+	public static class IdentifierContext extends ParserRuleContext {
+		public TerminalNode IDENT() { return getToken(P2CParser.IDENT, 0); }
+		public IdentifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_text; }
+		@Override public int getRuleIndex() { return RULE_identifier; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterText(this);
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterIdentifier(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitText(this);
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitIdentifier(this);
 		}
 	}
 
-	public final TextContext text() throws RecognitionException {
-		TextContext _localctx = new TextContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_text);
-		try {
-			int _alt;
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(19); 
-			_errHandler.sync(this);
-			_alt = 1;
-			do {
-				switch (_alt) {
-				case 1:
-					{
-					{
-					setState(18); match(LETTER);
-					}
-					}
-					break;
-				default:
-					throw new NoViableAltException(this);
-				}
-				setState(21); 
-				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
-			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class IdentContext extends ParserRuleContext {
-		public TerminalNode NUMBER(int i) {
-			return getToken(P2CParser.NUMBER, i);
-		}
-		public TerminalNode LETTER() { return getToken(P2CParser.LETTER, 0); }
-		public List<TextContext> text() {
-			return getRuleContexts(TextContext.class);
-		}
-		public List<TerminalNode> UNDERLINE() { return getTokens(P2CParser.UNDERLINE); }
-		public List<TerminalNode> NUMBER() { return getTokens(P2CParser.NUMBER); }
-		public TerminalNode UNDERLINE(int i) {
-			return getToken(P2CParser.UNDERLINE, i);
-		}
-		public TextContext text(int i) {
-			return getRuleContext(TextContext.class,i);
-		}
-		public IdentContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_ident; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterIdent(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitIdent(this);
-		}
-	}
-
-	public final IdentContext ident() throws RecognitionException {
-		IdentContext _localctx = new IdentContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_ident);
-		int _la;
+	public final IdentifierContext identifier() throws RecognitionException {
+		IdentifierContext _localctx = new IdentifierContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_identifier);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(23);
-			_la = _input.LA(1);
-			if ( !(_la==UNDERLINE || _la==LETTER) ) {
-			_errHandler.recoverInline(this);
-			}
-			consume();
-			setState(29);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << UNDERLINE) | (1L << NUMBER) | (1L << LETTER))) != 0)) {
-				{
-				setState(27);
-				switch (_input.LA(1)) {
-				case LETTER:
-					{
-					setState(24); text();
-					}
-					break;
-				case NUMBER:
-					{
-					setState(25); match(NUMBER);
-					}
-					break;
-				case UNDERLINE:
-					{
-					setState(26); match(UNDERLINE);
-					}
-					break;
-				default:
-					throw new NoViableAltException(this);
-				}
-				}
-				setState(31);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
+			setState(36); match(IDENT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -254,11 +214,12 @@ public class P2CParser extends Parser {
 	}
 
 	public static class TypeContext extends ParserRuleContext {
-		public TerminalNode BOOL() { return getToken(P2CParser.BOOL, 0); }
-		public TerminalNode CHAR() { return getToken(P2CParser.CHAR, 0); }
-		public TerminalNode INT() { return getToken(P2CParser.INT, 0); }
-		public TerminalNode DOUBLE() { return getToken(P2CParser.DOUBLE, 0); }
-		public TerminalNode FLOAT() { return getToken(P2CParser.FLOAT, 0); }
+		public PrimitiveTypeContext primitiveType() {
+			return getRuleContext(PrimitiveTypeContext.class,0);
+		}
+		public ArrayContext array() {
+			return getRuleContext(ArrayContext.class,0);
+		}
 		public TypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -280,7 +241,56 @@ public class P2CParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(32);
+			setState(39);
+			_la = _input.LA(1);
+			if (_la==ARRAY) {
+				{
+				setState(38); array();
+				}
+			}
+
+			setState(41); primitiveType();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class PrimitiveTypeContext extends ParserRuleContext {
+		public TerminalNode BOOL() { return getToken(P2CParser.BOOL, 0); }
+		public TerminalNode CHAR() { return getToken(P2CParser.CHAR, 0); }
+		public TerminalNode INT() { return getToken(P2CParser.INT, 0); }
+		public TerminalNode DOUBLE() { return getToken(P2CParser.DOUBLE, 0); }
+		public TerminalNode FLOAT() { return getToken(P2CParser.FLOAT, 0); }
+		public PrimitiveTypeContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_primitiveType; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterPrimitiveType(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitPrimitiveType(this);
+		}
+	}
+
+	public final PrimitiveTypeContext primitiveType() throws RecognitionException {
+		PrimitiveTypeContext _localctx = new PrimitiveTypeContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_primitiveType);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(43);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << INT) | (1L << DOUBLE) | (1L << FLOAT) | (1L << CHAR) | (1L << BOOL))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -300,11 +310,7 @@ public class P2CParser extends Parser {
 	}
 
 	public static class ArrayContext extends ParserRuleContext {
-		public TerminalNode ARRAY() { return getToken(P2CParser.ARRAY, 0); }
-		public TerminalNode OF() { return getToken(P2CParser.OF, 0); }
-		public TerminalNode LEFT_SQ_BRACKET() { return getToken(P2CParser.LEFT_SQ_BRACKET, 0); }
-		public TerminalNode RIGHT_SQ_BRACKET() { return getToken(P2CParser.RIGHT_SQ_BRACKET, 0); }
-		public TerminalNode INT_NUMBER() { return getToken(P2CParser.INT_NUMBER, 0); }
+		public TerminalNode INTEGER_CONSTANT() { return getToken(P2CParser.INTEGER_CONSTANT, 0); }
 		public ArrayContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -321,15 +327,15 @@ public class P2CParser extends Parser {
 
 	public final ArrayContext array() throws RecognitionException {
 		ArrayContext _localctx = new ArrayContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_array);
+		enterRule(_localctx, 10, RULE_array);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(34); match(ARRAY);
-			setState(35); match(LEFT_SQ_BRACKET);
-			setState(36); match(INT_NUMBER);
-			setState(37); match(RIGHT_SQ_BRACKET);
-			setState(38); match(OF);
+			setState(45); match(ARRAY);
+			setState(46); match(LEFT_SQ_BRACKET);
+			setState(47); match(INTEGER_CONSTANT);
+			setState(48); match(RIGHT_SQ_BRACKET);
+			setState(49); match(OF);
 			}
 		}
 		catch (RecognitionException re) {
@@ -343,19 +349,308 @@ public class P2CParser extends Parser {
 		return _localctx;
 	}
 
+	public static class ConstantContext extends ParserRuleContext {
+		public IdentifierContext identifier() {
+			return getRuleContext(IdentifierContext.class,0);
+		}
+		public TerminalNode INTEGER_CONSTANT() { return getToken(P2CParser.INTEGER_CONSTANT, 0); }
+		public TerminalNode FLOATING_CONSTANT() { return getToken(P2CParser.FLOATING_CONSTANT, 0); }
+		public ConstantContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_constant; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterConstant(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitConstant(this);
+		}
+	}
+
+	public final ConstantContext constant() throws RecognitionException {
+		ConstantContext _localctx = new ConstantContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_constant);
+		int _la;
+		try {
+			setState(60);
+			switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(52);
+				_la = _input.LA(1);
+				if (_la==T__0) {
+					{
+					setState(51); match(T__0);
+					}
+				}
+
+				setState(54); match(INTEGER_CONSTANT);
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(56);
+				_la = _input.LA(1);
+				if (_la==T__0) {
+					{
+					setState(55); match(T__0);
+					}
+				}
+
+				setState(58); match(FLOATING_CONSTANT);
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(59); identifier();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ExpressionContext extends ParserRuleContext {
+		public TermContext term() {
+			return getRuleContext(TermContext.class,0);
+		}
+		public TerminalNode ADD_OPERATORS() { return getToken(P2CParser.ADD_OPERATORS, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public ExpressionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expression; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitExpression(this);
+		}
+	}
+
+	public final ExpressionContext expression() throws RecognitionException {
+		ExpressionContext _localctx = new ExpressionContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_expression);
+		try {
+			setState(67);
+			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(62); term(0);
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(63); term(0);
+				setState(64); match(ADD_OPERATORS);
+				setState(65); expression();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class TermContext extends ParserRuleContext {
+		public FactorContext factor() {
+			return getRuleContext(FactorContext.class,0);
+		}
+		public TermContext term() {
+			return getRuleContext(TermContext.class,0);
+		}
+		public TerminalNode MUL_OPERATORS() { return getToken(P2CParser.MUL_OPERATORS, 0); }
+		public TermContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_term; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterTerm(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitTerm(this);
+		}
+	}
+
+	public final TermContext term() throws RecognitionException {
+		return term(0);
+	}
+
+	private TermContext term(int _p) throws RecognitionException {
+		ParserRuleContext _parentctx = _ctx;
+		int _parentState = getState();
+		TermContext _localctx = new TermContext(_ctx, _parentState);
+		TermContext _prevctx = _localctx;
+		int _startState = 16;
+		enterRecursionRule(_localctx, 16, RULE_term, _p);
+		try {
+			int _alt;
+			enterOuterAlt(_localctx, 1);
+			{
+			{
+			setState(70); factor();
+			}
+			_ctx.stop = _input.LT(-1);
+			setState(77);
+			_errHandler.sync(this);
+			_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1 ) {
+					if ( _parseListeners!=null ) triggerExitRuleEvent();
+					_prevctx = _localctx;
+					{
+					{
+					_localctx = new TermContext(_parentctx, _parentState);
+					pushNewRecursionContext(_localctx, _startState, RULE_term);
+					setState(72);
+					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
+					setState(73); match(MUL_OPERATORS);
+					setState(74); factor();
+					}
+					} 
+				}
+				setState(79);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			unrollRecursionContexts(_parentctx);
+		}
+		return _localctx;
+	}
+
+	public static class FactorContext extends ParserRuleContext {
+		public ConstantContext constant() {
+			return getRuleContext(ConstantContext.class,0);
+		}
+		public TerminalNode LEFT_BRACKET() { return getToken(P2CParser.LEFT_BRACKET, 0); }
+		public TerminalNode RIGHT_BRACKET() { return getToken(P2CParser.RIGHT_BRACKET, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public FactorContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_factor; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).enterFactor(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof P2CListener ) ((P2CListener)listener).exitFactor(this);
+		}
+	}
+
+	public final FactorContext factor() throws RecognitionException {
+		FactorContext _localctx = new FactorContext(_ctx, getState());
+		enterRule(_localctx, 18, RULE_factor);
+		try {
+			setState(85);
+			switch (_input.LA(1)) {
+			case T__0:
+			case IDENT:
+			case FLOATING_CONSTANT:
+			case INTEGER_CONSTANT:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(80); constant();
+				}
+				break;
+			case LEFT_BRACKET:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(81); match(LEFT_BRACKET);
+				setState(82); expression();
+				setState(83); match(RIGHT_BRACKET);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
+		switch (ruleIndex) {
+		case 8: return term_sempred((TermContext)_localctx, predIndex);
+		}
+		return true;
+	}
+	private boolean term_sempred(TermContext _localctx, int predIndex) {
+		switch (predIndex) {
+		case 0: return precpred(_ctx, 1);
+		}
+		return true;
+	}
+
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\25+\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\3\2\3\2\5\2\21\n\2\3\2\3\2\3\3\6\3"+
-		"\26\n\3\r\3\16\3\27\3\4\3\4\3\4\3\4\7\4\36\n\4\f\4\16\4!\13\4\3\5\3\5"+
-		"\3\6\3\6\3\6\3\6\3\6\3\6\3\6\2\2\7\2\4\6\b\n\2\4\4\2\13\13\17\17\3\2\4"+
-		"\b*\2\f\3\2\2\2\4\25\3\2\2\2\6\31\3\2\2\2\b\"\3\2\2\2\n$\3\2\2\2\f\r\7"+
-		"\3\2\2\r\16\5\6\4\2\16\20\7\20\2\2\17\21\5\n\6\2\20\17\3\2\2\2\20\21\3"+
-		"\2\2\2\21\22\3\2\2\2\22\23\5\b\5\2\23\3\3\2\2\2\24\26\7\17\2\2\25\24\3"+
-		"\2\2\2\26\27\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\5\3\2\2\2\31\37\t"+
-		"\2\2\2\32\36\5\4\3\2\33\36\7\16\2\2\34\36\7\13\2\2\35\32\3\2\2\2\35\33"+
-		"\3\2\2\2\35\34\3\2\2\2\36!\3\2\2\2\37\35\3\2\2\2\37 \3\2\2\2 \7\3\2\2"+
-		"\2!\37\3\2\2\2\"#\t\3\2\2#\t\3\2\2\2$%\7\n\2\2%&\7\21\2\2&\'\7\f\2\2\'"+
-		"(\7\22\2\2()\7\t\2\2)\13\3\2\2\2\6\20\27\35\37";
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\33Z\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3"+
+		"\2\3\2\3\2\3\2\3\2\3\2\5\2\35\n\2\3\3\3\3\3\3\3\3\3\3\3\3\5\3%\n\3\3\4"+
+		"\3\4\3\5\5\5*\n\5\3\5\3\5\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\5\b\67\n"+
+		"\b\3\b\3\b\5\b;\n\b\3\b\3\b\5\b?\n\b\3\t\3\t\3\t\3\t\3\t\5\tF\n\t\3\n"+
+		"\3\n\3\n\3\n\3\n\3\n\7\nN\n\n\f\n\16\nQ\13\n\3\13\3\13\3\13\3\13\3\13"+
+		"\5\13X\n\13\3\13\2\3\22\f\2\4\6\b\n\f\16\20\22\24\2\3\3\2\5\tY\2\34\3"+
+		"\2\2\2\4\36\3\2\2\2\6&\3\2\2\2\b)\3\2\2\2\n-\3\2\2\2\f/\3\2\2\2\16>\3"+
+		"\2\2\2\20E\3\2\2\2\22G\3\2\2\2\24W\3\2\2\2\26\27\5\4\3\2\27\30\7\25\2"+
+		"\2\30\35\3\2\2\2\31\32\5\20\t\2\32\33\7\25\2\2\33\35\3\2\2\2\34\26\3\2"+
+		"\2\2\34\31\3\2\2\2\35\3\3\2\2\2\36\37\7\4\2\2\37 \5\6\4\2 !\7\24\2\2!"+
+		"$\5\b\5\2\"#\7\21\2\2#%\5\16\b\2$\"\3\2\2\2$%\3\2\2\2%\5\3\2\2\2&\'\7"+
+		"\26\2\2\'\7\3\2\2\2(*\5\f\7\2)(\3\2\2\2)*\3\2\2\2*+\3\2\2\2+,\5\n\6\2"+
+		",\t\3\2\2\2-.\t\2\2\2.\13\3\2\2\2/\60\7\13\2\2\60\61\7\r\2\2\61\62\7\30"+
+		"\2\2\62\63\7\16\2\2\63\64\7\n\2\2\64\r\3\2\2\2\65\67\7\3\2\2\66\65\3\2"+
+		"\2\2\66\67\3\2\2\2\678\3\2\2\28?\7\30\2\29;\7\3\2\2:9\3\2\2\2:;\3\2\2"+
+		"\2;<\3\2\2\2<?\7\27\2\2=?\5\6\4\2>\66\3\2\2\2>:\3\2\2\2>=\3\2\2\2?\17"+
+		"\3\2\2\2@F\5\22\n\2AB\5\22\n\2BC\7\22\2\2CD\5\20\t\2DF\3\2\2\2E@\3\2\2"+
+		"\2EA\3\2\2\2F\21\3\2\2\2GH\b\n\1\2HI\5\24\13\2IO\3\2\2\2JK\f\3\2\2KL\7"+
+		"\23\2\2LN\5\24\13\2MJ\3\2\2\2NQ\3\2\2\2OM\3\2\2\2OP\3\2\2\2P\23\3\2\2"+
+		"\2QO\3\2\2\2RX\5\16\b\2ST\7\17\2\2TU\5\20\t\2UV\7\20\2\2VX\3\2\2\2WR\3"+
+		"\2\2\2WS\3\2\2\2X\25\3\2\2\2\13\34$)\66:>EOW";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -24,7 +24,7 @@ public class App
 	    P2CParser parser = new P2CParser(tokens);
 	 
 	    // Specify our entry point
-	    ParseTree tree = parser.varDeclaration();
+	    ParseTree tree = parser.program();
 	    System.out.println();
 	    System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 	}
@@ -39,6 +39,9 @@ public class App
       doTest("let _a12 : array[10] of int;");
       doTest("let a : int;");
       doTest("let _a12 : int;");
+      doTest("let _a12 : int = 214;");
+      doTest("let _a12 : int = 12.1234123;");
+      doTest("-12345 + 2341 + (23.212 / 123.2);");
     	String str = "";
     	Scanner s = new Scanner(System.in);
     	while(!str.equals("exit")) {
