@@ -1,0 +1,10 @@
+fun foo(n : int) returns int
+do
+	return n * foo(n - 1);
+done
+
+do 
+	let _a11 : int = 3;
+	let _a12 : array[1] of int;
+	let _a13 : int = foo(_a11);
+done
