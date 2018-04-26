@@ -3,15 +3,25 @@ grammar P2C;
 /*
  * Parser Rules
  */
+ 
+ /*start
+	:	(varDeclaration | expression | funDefinition)* mainBlock
+	;
+*/
 
-program 
-	:	varDeclaration SEMICOLON
+program //do testow
+	:	varDeclaration
 	|	expression SEMICOLON
+	|	funDefinition
 	;
 
 
 varDeclaration 
-	: LET identifier COLON type (ASSIGNMENT constant)?
+	: LET parameterGroup (ASSIGNMENT constant)? SEMICOLON
+	;
+	
+parameterGroup
+	:	identifier COLON type
 	;
 	
 	
@@ -23,7 +33,7 @@ type
 
 
 primitiveType 
-	: INT | DOUBLE | FLOAT | CHAR | BOOL
+	: INT | DOUBLE | FLOAT | CHAR | BOOL | STRING
 	;
 
 	
@@ -36,6 +46,7 @@ constant
 	:	'-'? INTEGER_CONSTANT
 	|	'-'? FLOATING_CONSTANT // | function
 	|	identifier
+	|	funDesignator
 	;
 
 expression
@@ -52,21 +63,62 @@ factor
 	:	constant
 	|	LEFT_BRACKET expression	RIGHT_BRACKET
 	;
+	
+// function definition
+funDefinition
+	:	FUN identifier LEFT_BRACKET parameterList? RIGHT_BRACKET (ARROW resultType)? block
+		
+	;
+	
+parameterList
+	:	parameterGroup (COMMA parameterGroup)*
+	;
+	
+resultType
+	: type
+	;
+	
+funDesignator
+	:	identifier LEFT_BRACKET argumentList? RIGHT_BRACKET
+	;
+	
+argumentList
+	:	expression (COMMA expression)*
+	;
+
+blockElement
+	:	expression SEMICOLON
+	;	
+	
+returnStatement
+	:	RETURN expression SEMICOLON
+	;
+	
+block
+	:	DO blockElement* returnStatement DONE
+	;
  
  /*
  * Lexer Rules
  */
 	
 
-
-LET : 'let' ;
 INT : 'int' ;
 DOUBLE : 'double' ;
 FLOAT : 'float' ;
 CHAR : 'char' ;
 BOOL : 'bool' ;
+STRING : 'string';
 
+IF : 'if';
+ELSIF : 'elsif' ;
+ELSE : 'else';
 
+RETURN : 'return';
+DO : 'do';
+DONE : 'done';
+LET : 'let' ;
+FUN : 'fun' ;
 OF : 'of' ;
 ARRAY : 'array' ;
 UNDERLINE : '_' ;
@@ -88,8 +140,9 @@ MUL_OPERATORS
 	;
 	
 
-
+ARROW : '->';
 COLON : ':' ;
+COMMA : ',' ;
 SEMICOLON: ';';
 
 
@@ -172,11 +225,11 @@ HEXADECIMAL_DIGIT
 WHITESPACE : ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ -> skip ;
 
 BLOCK_COMMENT
-    :   '/*' .*? '*/'
+    :   '##' .*? '##'
         -> skip
     ;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]*
+    :   '#' ~[\r\n]*
         -> skip
 ;

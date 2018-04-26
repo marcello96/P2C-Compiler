@@ -42,6 +42,7 @@ public class App
       doTest("let _a12 : int = 214;");
       doTest("let _a12 : int = 12.1234123;");
       doTest("-12345 + 2341 + (23.212 / 123.2);");
+      doTest("fun asd(a:int, b:string) -> int do return 342; done");
     	String str = "";
     	Scanner s = new Scanner(System.in);
     	while(!str.equals("exit")) {
