@@ -1,0 +1,11 @@
+fun foo(n : int, result : int) -> int
+do
+	return foo(n - 1, result * n);
+done
+
+do 
+	let _a11 : int = 3;
+	let _a12 : array[1] of int;
+  let _a13 : int = 1;
+	let _a14 : int = foo(_a11, _a13);
+done
