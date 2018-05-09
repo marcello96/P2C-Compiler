@@ -4,21 +4,29 @@ grammar P2C;
  * Parser Rules
  */
  
- /*start
-	:	(varDeclaration | expression | funDefinition)* mainBlock
+program
+	:	(varDeclaration | funDefinition)* 
+	| DO blockWithoutReturn DONE
 	;
-*/
 
-program //do testow
-	:	varDeclaration
+
+start //do testow
+	:	varDeclaration SEMICOLON
 	|	expression SEMICOLON
+	| assignment SEMICOLON
 	|	funDefinition
+	| loopDefinition
+	| ifDefinition
 	;
 
 
 varDeclaration 
-	: LET parameterGroup (ASSIGNMENT constant)? SEMICOLON
+	: LET parameterGroup (ASSIGN constant)?
 	;
+
+assignment
+ : IDENT ASSIGN expression
+ ;
 	
 parameterGroup
 	:	identifier COLON type
@@ -38,35 +46,49 @@ primitiveType
 
 	
 array
-	: 'array' '[' INTEGER_CONSTANT ']' 'of' 
+	: ARRAY LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET OF
 	;	
 	
-
 constant
-	:	'-'? INTEGER_CONSTANT
-	|	'-'? FLOATING_CONSTANT // | function
-	|	identifier
-	|	funDesignator
+	: '-'? INTEGER_CONSTANT 	#integer
+	| '-'? FLOATING_CONSTANT	#floating
 	;
+	
+// if definition
+ifDefinition
+	: IF LEFT_BRACKET expression RIGHT_BRACKET blockWithoutReturn 
+		(ELSIF LEFT_BRACKET expression RIGHT_BRACKET blockWithoutReturn)* (ELSE blockWithoutReturn)?
+	;
+	
+// loop definition
+loopDefinition
+	: WHILE LEFT_BRACKET expression RIGHT_BRACKET DO blockWithoutReturn DONE  #while
+	| FOR LEFT_BRACKET assignment SEMICOLON expression SEMICOLON assignment RIGHT_BRACKET DO blockWithoutReturn DONE #for
+  ;
 
+	
 expression
-	:	term
-	|	term ADD_OPERATORS expression
-	;
-	
-term
-	:	factor
-	|	term MUL_OPERATORS factor
-	;
-	
-factor
-	:	constant
-	|	LEFT_BRACKET expression	RIGHT_BRACKET
-	;
+ : EXCLAMATION expression                     			#notExpr
+ | expression MUL_OPERATORS expression      				#multiplicationExpr
+ | expression ADD_OPERATORS expression          		#additiveExpr
+ | expression RELATIONALEXPR expression 						#relationalExpr
+ | expression AND expression                        #andExpr
+ | expression OR expression                         #orExpr
+ | atom                                 						#atomExpr
+ ;
+ 
+ atom
+ : LEFT_BRACKET expression RIGHT_BRACKET 		#parExpr
+ | constant  																#constantAtom
+ | funDesignator														#functionAtom
+ | (TRUE | FALSE) 													#booleanAtom
+ | IDENT          													#idAtom
+ | NULL            													#nilAtom
+ ;
 	
 // function definition
 funDefinition
-	:	FUN identifier LEFT_BRACKET parameterList? RIGHT_BRACKET (ARROW resultType)? block
+	:	FUN identifier LEFT_BRACKET parameterList? RIGHT_BRACKET (ARROW resultType)? DO block DONE
 		
 	;
 	
@@ -87,21 +109,28 @@ argumentList
 	;
 
 blockElement
-	:	expression SEMICOLON
+	: varDeclaration SEMICOLON	#declarationElement
+	| assignment SEMICOLON			#assignmentElement 
+	| loopDefinition						#loopELement
+	| ifDefinition 							#ifElement
 	;	
 	
 returnStatement
 	:	RETURN expression SEMICOLON
 	;
 	
+blockWithoutReturn
+	: blockElement*
+	;
+		
 block
-	:	DO blockElement* returnStatement DONE
+	: blockElement* returnStatement
 	;
  
  /*
  * Lexer Rules
  */
-	
+
 
 INT : 'int' ;
 DOUBLE : 'double' ;
@@ -109,26 +138,46 @@ FLOAT : 'float' ;
 CHAR : 'char' ;
 BOOL : 'bool' ;
 STRING : 'string';
+NULL : 'null' ;
+TRUE : 'true' ;
+FALSE : 'false' ;
 
 IF : 'if';
 ELSIF : 'elsif' ;
 ELSE : 'else';
 
-RETURN : 'return';
+WHILE : 'while' ;
 DO : 'do';
 DONE : 'done';
-LET : 'let' ;
+FOR: 'for';
+
 FUN : 'fun' ;
+RETURN : 'return';
+
+LET : 'let' ;
 OF : 'of' ;
 ARRAY : 'array' ;
+
 UNDERLINE : '_' ;
-
-
 LEFT_SQ_BRACKET : '[' ;
 RIGHT_SQ_BRACKET : ']' ;
 LEFT_BRACKET : '(' ;
 RIGHT_BRACKET : ')' ;
-ASSIGNMENT : '=' ;
+ASSIGN : '=' ;
+
+AND : 'and' ;
+OR : 'or' ;
+
+
+RELATIONALEXPR
+ : '<'
+ | '>'
+ | '<='
+ | '>='
+ | '=='
+ | '!='
+ ;
+ 
 ADD_OPERATORS
 	:	'+'
 	|	'-'
@@ -140,6 +189,7 @@ MUL_OPERATORS
 	;
 	
 
+EXCLAMATION : '!' ;
 ARROW : '->';
 COLON : ':' ;
 COMMA : ',' ;
@@ -150,7 +200,6 @@ SEMICOLON: ';';
 IDENT
 	:	('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
 	;
-
 
 FLOATING_CONSTANT
     :   NONZERO_DIGIT DIGIT_SEQUENCE? '.' DIGIT_SEQUENCE
@@ -165,9 +214,6 @@ INTEGER_CONSTANT
     |   HEXADECIMAL_CONSTANT
     |	BINARY_CONSTANT
 ;
-
-
-
 
 fragment
 DIGIT_SEQUENCE

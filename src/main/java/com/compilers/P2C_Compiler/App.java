@@ -35,20 +35,34 @@ public class App
 	}
     public static void main( String[] args )
     {
-      doTest("let a : array[10] of int;");
+      /*doTest("let a : array[10] of int;");
       doTest("let _a12 : array[10] of int;");
       doTest("let a : int;");
       doTest("let _a12 : int;");
       doTest("let _a12 : int = 214;");
       doTest("let _a12 : int = 12.1234123;");
       doTest("-12345 + 2341 + (23.212 / 123.2);");
-      doTest("fun asd(a:int, b:string) -> int do return 342; done");
-    	String str = "";
+      doTest("fun asd(a:int, b:string) -> int do let ab_2 : int; return 342; done");
+      doTest("while (a == 3) do done");
+      doTest("while (1 <= 2) do let a_12 : int = -123; a_12 = 3; done");
+      doTest("if (a == 3) a = 4; elsif (a == 2) a = 2; elsif (a == 1) let _b12 : int = 12; else b_12 = -3.3;");
+      doTest("for (i = 2; i <= 3; i = i + 1) do i = i + 1; done");*/
+      doTest(
+          "do\n"
+          + "let a_12 : int = 1;\n"
+          + "if (a_12 == 1)\n"
+          + "a_12 = 2;\n"
+          + "else\n"
+          + "let a_13 : int = 3;\n"
+          + "done\n"
+          );
+      
+    	/*String str = "";
     	Scanner s = new Scanner(System.in);
     	while(!str.equals("exit")) {
     		str = s.nextLine();
             printDrink(str);
-    	}
+    	}*/
     	
     }
 }
