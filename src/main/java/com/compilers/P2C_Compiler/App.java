@@ -1,5 +1,6 @@
 package com.compilers.P2C_Compiler;
 
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 import javax.swing.plaf.synth.SynthSpinnerUI;
@@ -53,13 +54,22 @@ public class App
       doTest("while (1 <= 2) do let a_12 : int = -123; a_12 = 3; done");
       doTest("if (a == 3) a = 4; elsif (a == 2) a = 2; elsif (a == 1) let _b12 : int = 12; else b_12 = -3.3;");
       doTest("for (i = 2; i <= 3; i = i + 1) do i = i + 1; done");*/
+      
       doTest(
-          "do\n"
+          "fun foo(n : int, result : int) -> int\n" 
+          +"do\r\n"  
+          +"  return n;\n" 
+          +"done\n"
+          + "do\n"
           + "let a_12 : int = 1;\n"
           + "if (a_12 == 1)\n"
           + "a_12 = 2;\n"
+          + "while (i < 3)\n"
+          + "do\n"
+          + "done\n"
           + "else\n"
           + "let a_13 : int = 3;\n"
+          + "a_13 = -123;\n"
           + "done\n"
           );
       

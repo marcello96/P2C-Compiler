@@ -8,4 +8,16 @@ do
 	let _a12 : array[1] of int;
   let _a13 : int = 1;
 	let _a14 : int = foo(_a11, _a13);
+	while (i < 3) 
+	do
+		for (index in 1..100)
+		do 
+			if (j < 3)
+				_a11 = 4;
+			elsif
+				_a13 = 5;
+			else
+				_a13 = 6;
+		done
+	done
 done
