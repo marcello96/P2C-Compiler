@@ -50,8 +50,8 @@ array
 	;	
 	
 constant
-	: '-'? INTEGER_CONSTANT 	#integer
-	| '-'? FLOATING_CONSTANT	#floating
+	: '-'? INTEGER_CONSTANT
+	| '-'? FLOATING_CONSTANT
 	;
 	
 // if definition
@@ -68,22 +68,22 @@ loopDefinition
 
 	
 expression
- : EXCLAMATION expression                     			#notExpr
- | expression MUL_OPERATORS expression      				#multiplicationExpr
- | expression ADD_OPERATORS expression          		#additiveExpr
- | expression RELATIONALEXPR expression 						#relationalExpr
- | expression AND expression                        #andExpr
- | expression OR expression                         #orExpr
- | atom                                 						#atomExpr
+ : EXCLAMATION expression                     			
+ | expression MUL_OPERATORS expression      				
+ | expression ADD_OPERATORS expression          		
+ | expression RELATIONALEXPR expression 						
+ | expression AND expression                        
+ | expression OR expression                         
+ | atom                                 						
  ;
  
  atom
- : LEFT_BRACKET expression RIGHT_BRACKET 		#parExpr
- | constant  																#constantAtom
- | funDesignator														#functionAtom
- | (TRUE | FALSE) 													#booleanAtom
- | IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)? 													#idAtom
- | NULL            													#nilAtom
+ : LEFT_BRACKET expression RIGHT_BRACKET 		
+ | constant  																
+ | funDesignator														
+ | (TRUE | FALSE) 													
+ | IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)? 													
+ | NULL            													
  ;
 	
 // function definition
@@ -109,10 +109,10 @@ argumentList
 	;
 
 blockElement
-	: varDeclaration SEMICOLON	#declarationElement
-	| assignment SEMICOLON			#assignmentElement 
-	| loopDefinition						#loopELement
-	| ifDefinition 							#ifElement
+	: varDeclaration SEMICOLON	
+	| assignment SEMICOLON			
+	| loopDefinition						
+	| ifDefinition 							
 	;	
 	
 returnStatement
