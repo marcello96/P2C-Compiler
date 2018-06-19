@@ -25,7 +25,7 @@ varDeclaration
 	;
 
 assignment
- : IDENT ASSIGN expression
+ : IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)? ASSIGN expression
  ;
 	
 parameterGroup
@@ -41,7 +41,7 @@ type
 
 
 primitiveType 
-	: INT | DOUBLE | FLOAT | CHAR | BOOL | STRING
+	: INT | LONG | DOUBLE | FLOAT | CHAR | BOOL | STRING
 	;
 
 	
@@ -82,7 +82,7 @@ expression
  | constant  																#constantAtom
  | funDesignator														#functionAtom
  | (TRUE | FALSE) 													#booleanAtom
- | IDENT          													#idAtom
+ | IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)? 													#idAtom
  | NULL            													#nilAtom
  ;
 	
@@ -133,6 +133,7 @@ block
 
 
 INT : 'int' ;
+LONG : 'long' ;
 DOUBLE : 'double' ;
 FLOAT : 'float' ;
 CHAR : 'char' ;

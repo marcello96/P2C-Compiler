@@ -22,11 +22,17 @@ public class App
 	 
 	    // Pass the tokens to the parser
 	    P2CParser parser = new P2CParser(tokens);
-	 
-	    // Specify our entry point
-	    ParseTree tree = parser.program();
+	    
+	    String sourceFile = "result.c";
+	    
+	    FileWriter writer = new FileWriter(sourceFile);
+	    ParseTree parseTree = parser.program();
+	    // Add listener
+	    MyVisitor visitor = new MyVisitor(writer);
+	    visitor.visit(parseTree);
+        
 	    System.out.println();
-	    System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+	    System.out.println(parseTree.toStringTree(parser)); // print LISP-style tree
 	}
 	
 	private static void doTest(String _command) {

@@ -3,15 +3,33 @@ grammar P2C;
 /*
  * Parser Rules
  */
+ 
+program
+	:	(varDeclaration | funDefinition)* 
+	| DO blockWithoutReturn DONE
+	;
 
-program 
+
+start //do testow
 	:	varDeclaration SEMICOLON
 	|	expression SEMICOLON
+	| assignment SEMICOLON
+	|	funDefinition
+	| loopDefinition
+	| ifDefinition
 	;
 
 
 varDeclaration 
-	: LET identifier COLON type (ASSIGNMENT constant)?
+	: LET parameterGroup (ASSIGN constant)?
+	;
+
+assignment
+ : IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)? ASSIGN expression
+ ;
+	
+parameterGroup
+	:	identifier COLON type
 	;
 	
 	
@@ -23,60 +41,144 @@ type
 
 
 primitiveType 
-	: INT | DOUBLE | FLOAT | CHAR | BOOL
+	: INT | LONG | DOUBLE | FLOAT | CHAR | BOOL | STRING
 	;
 
 	
 array
-	: 'array' '[' INTEGER_CONSTANT ']' 'of' 
+	: ARRAY LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET OF
 	;	
 	
-
 constant
-	:	'-'? INTEGER_CONSTANT
-	|	'-'? FLOATING_CONSTANT // | function
-	|	identifier
+	: '-'? INTEGER_CONSTANT 	#integer
+	| '-'? FLOATING_CONSTANT	#floating
+	;
+	
+// if definition
+ifDefinition
+	: IF LEFT_BRACKET expression RIGHT_BRACKET blockWithoutReturn 
+		(ELSIF LEFT_BRACKET expression RIGHT_BRACKET blockWithoutReturn)* (ELSE blockWithoutReturn)?
+	;
+	
+// loop definition
+loopDefinition
+	: WHILE LEFT_BRACKET expression RIGHT_BRACKET DO blockWithoutReturn DONE  #while
+	| FOR LEFT_BRACKET assignment SEMICOLON expression SEMICOLON assignment RIGHT_BRACKET DO blockWithoutReturn DONE #for
+  ;
+
+	
+expression
+ : EXCLAMATION expression                     			#notExpr
+ | expression MUL_OPERATORS expression      				#multiplicationExpr
+ | expression ADD_OPERATORS expression          		#additiveExpr
+ | expression RELATIONALEXPR expression 						#relationalExpr
+ | expression AND expression                        #andExpr
+ | expression OR expression                         #orExpr
+ | atom                                 						#atomExpr
+ ;
+ 
+ atom
+ : LEFT_BRACKET expression RIGHT_BRACKET 		#parExpr
+ | constant  																#constantAtom
+ | funDesignator														#functionAtom
+ | (TRUE | FALSE) 													#booleanAtom
+ | IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)? 													#idAtom
+ | NULL            													#nilAtom
+ ;
+	
+// function definition
+funDefinition
+	:	FUN identifier LEFT_BRACKET parameterList? RIGHT_BRACKET (ARROW resultType)? DO block DONE
+		
+	;
+	
+parameterList
+	:	parameterGroup (COMMA parameterGroup)*
+	;
+	
+resultType
+	: type
+	;
+	
+funDesignator
+	:	identifier LEFT_BRACKET argumentList? RIGHT_BRACKET
+	;
+	
+argumentList
+	:	expression (COMMA expression)*
 	;
 
-expression
-	:	term
-	|	term ADD_OPERATORS expression
+blockElement
+	: varDeclaration SEMICOLON	#declarationElement
+	| assignment SEMICOLON			#assignmentElement 
+	| loopDefinition						#loopELement
+	| ifDefinition 							#ifElement
+	;	
+	
+returnStatement
+	:	RETURN expression SEMICOLON
 	;
 	
-term
-	:	factor
-	|	term MUL_OPERATORS factor
+blockWithoutReturn
+	: blockElement*
 	;
-	
-factor
-	:	constant
-	|	LEFT_BRACKET expression	RIGHT_BRACKET
+		
+block
+	: blockElement* returnStatement
 	;
  
  /*
  * Lexer Rules
  */
-	
 
 
-LET : 'let' ;
 INT : 'int' ;
+LONG : 'long' ;
 DOUBLE : 'double' ;
 FLOAT : 'float' ;
 CHAR : 'char' ;
 BOOL : 'bool' ;
+STRING : 'string';
+NULL : 'null' ;
+TRUE : 'true' ;
+FALSE : 'false' ;
 
+IF : 'if';
+ELSIF : 'elsif' ;
+ELSE : 'else';
 
+WHILE : 'while' ;
+DO : 'do';
+DONE : 'done';
+FOR: 'for';
+
+FUN : 'fun' ;
+RETURN : 'return';
+
+LET : 'let' ;
 OF : 'of' ;
 ARRAY : 'array' ;
+
 UNDERLINE : '_' ;
-
-
 LEFT_SQ_BRACKET : '[' ;
 RIGHT_SQ_BRACKET : ']' ;
 LEFT_BRACKET : '(' ;
 RIGHT_BRACKET : ')' ;
-ASSIGNMENT : '=' ;
+ASSIGN : '=' ;
+
+AND : 'and' ;
+OR : 'or' ;
+
+
+RELATIONALEXPR
+ : '<'
+ | '>'
+ | '<='
+ | '>='
+ | '=='
+ | '!='
+ ;
+ 
 ADD_OPERATORS
 	:	'+'
 	|	'-'
@@ -88,8 +190,10 @@ MUL_OPERATORS
 	;
 	
 
-
+EXCLAMATION : '!' ;
+ARROW : '->';
 COLON : ':' ;
+COMMA : ',' ;
 SEMICOLON: ';';
 
 
@@ -97,7 +201,6 @@ SEMICOLON: ';';
 IDENT
 	:	('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
 	;
-
 
 FLOATING_CONSTANT
     :   NONZERO_DIGIT DIGIT_SEQUENCE? '.' DIGIT_SEQUENCE
@@ -112,9 +215,6 @@ INTEGER_CONSTANT
     |   HEXADECIMAL_CONSTANT
     |	BINARY_CONSTANT
 ;
-
-
-
 
 fragment
 DIGIT_SEQUENCE
@@ -172,11 +272,11 @@ HEXADECIMAL_DIGIT
 WHITESPACE : ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ -> skip ;
 
 BLOCK_COMMENT
-    :   '/*' .*? '*/'
+    :   '##' .*? '##'
         -> skip
     ;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]*
+    :   '#' ~[\r\n]*
         -> skip
 ;
