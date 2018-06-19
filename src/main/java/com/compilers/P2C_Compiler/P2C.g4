@@ -71,12 +71,16 @@ loopDefinition
 	
 expression
  : EXCLAMATION expression                     			
- | expression MUL_OPERATORS expression      				
- | expression ADD_OPERATORS expression          		
- | expression RELATIONALEXPR expression 						
- | expression AND expression                        
- | expression OR expression                         
+ | expression operators expression      				                
  | atom                                 						
+ ;
+ 
+operators
+ : MUL_OPERATORS
+ | ADD_OPERATORS
+ | RELATIONALEXPR
+ | AND
+ | OR
  ;
  
  atom

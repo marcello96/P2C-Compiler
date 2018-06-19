@@ -87,14 +87,34 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		return result;
 	}
 	
-	/*@Override
-	public String visitExpression*/
-	
-	@Override 
-	public String visitIfDefinition(@NotNull P2CParser.IfDefinitionContext ctx) { 
-	  
-		String condition = visit(ctx.expression(0));
-	    String stat = visit(ctx.blockWithoutReturn(0));
-	    return String.format("if(%s){\n%s}", condition, stat);
-	}
+	@Override public String visitOperators(@NotNull P2CParser.OperatorsContext ctx) { 
+    return OperatorMapping.map(ctx.getText());
+  }
+  
+  @Override 
+  public String visitExpression(@NotNull P2CParser.ExpressionContext ctx) { 
+     if (ctx.atom() != null) {
+       return visit(ctx.atom());
+     }
+     if (ctx.EXCLAMATION() != null) {
+       return "!" + visit(ctx.expression(0));
+     }
+     
+     StringBuilder result = new StringBuilder();
+     result.append(visit(ctx.expression(0)));
+     result.append(" ");
+     result.append(visit(ctx.operators()));
+     result.append(" ");
+     result.append(visit(ctx.expression(1)));
+     
+     return result.toString();
+  }
+  
+  @Override 
+  public String visitIfDefinition(@NotNull P2CParser.IfDefinitionContext ctx) { 
+    
+    String condition = visit(ctx.expression(0));
+    String stat = visit(ctx.blockWithoutReturn(0));
+    return String.format("if (%s){\n%s}", condition, stat);
+  }
 }
