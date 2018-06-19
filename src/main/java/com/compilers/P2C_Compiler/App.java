@@ -55,7 +55,7 @@ public class App
       doTest("if (a == 3) a = 4; elsif (a == 2) a = 2; elsif (a == 1) let _b12 : int = 12; else b_12 = -3.3;");
       doTest("for (i = 2; i <= 3; i = i + 1) do i = i + 1; done");*/
       
-      doTest(
+      /*doTest(
           "fun foo(n : int, result : int) -> int\n" 
           +"do\r\n"  
           +"  return n;\n" 
@@ -72,7 +72,7 @@ public class App
           + "a_13 = -123;\n"
           + "done\n"
           );
-      
+      */
     	/*String str = "";
     	Scanner s = new Scanner(System.in);
     	while(!str.equals("exit")) {
@@ -80,5 +80,9 @@ public class App
             printDrink(str);
     	}*/
     	
+      doTest("let a : int;\n"
+      		+ "let a : double;\n"
+      		+ "do\n"
+      		+ "done\n");
     }
 }
