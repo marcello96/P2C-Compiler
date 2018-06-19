@@ -42,8 +42,8 @@ public class App
 	}
     public static void main( String[] args )
     {
-      /*doTest("let a : array[10] of int;");
-      doTest("let _a12 : array[10] of int;");
+      doTest("let a : array[10] of int; do done");
+      /*doTest("let _a12 : array[10] of int;");
       doTest("let a : int;");
       doTest("let _a12 : int;");
       doTest("let _a12 : int = 214;");
@@ -55,13 +55,13 @@ public class App
       doTest("if (a == 3) a = 4; elsif (a == 2) a = 2; elsif (a == 1) let _b12 : int = 12; else b_12 = -3.3;");
       doTest("for (i = 2; i <= 3; i = i + 1) do i = i + 1; done");*/
       
-      doTest(
+      /*doTest(
           "fun foo(n : int, result : int) -> int\n" 
           +"do\r\n"  
           +"  return n;\n" 
           +"done\n"
           + "do\n"
-          + "let a_12 : int = 1;\n"
+          + "let a_12 : int = 1\n"
           + "if (a_12 == 1)\n"
           + "a_12 = 2;\n"
           + "while (i < 3)\n"
@@ -71,7 +71,7 @@ public class App
           + "let a_13 : int = 3;\n"
           + "a_13 = -123;\n"
           + "done\n"
-          );
+          );*/
       
     	/*String str = "";
     	Scanner s = new Scanner(System.in);

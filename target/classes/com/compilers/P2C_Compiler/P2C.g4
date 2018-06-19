@@ -5,7 +5,7 @@ grammar P2C;
  */
  
 program
-	:	(varDeclaration | funDefinition)* 
+	:	(varDeclaration SEMICOLON | funDefinition)* 
 	| DO blockWithoutReturn DONE
 	;
 

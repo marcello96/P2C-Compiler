@@ -5,7 +5,7 @@ grammar P2C;
  */
  
 program
-	:	(varDeclaration | funDefinition)* 
+	:	(varDeclaration SEMICOLON | funDefinition)* 
 	| DO blockWithoutReturn DONE
 	;
 
@@ -56,8 +56,8 @@ constant
 	
 // if definition
 ifDefinition
-	: IF LEFT_BRACKET expression RIGHT_BRACKET blockWithoutReturn 
-		(ELSIF LEFT_BRACKET expression RIGHT_BRACKET blockWithoutReturn)* (ELSE blockWithoutReturn)?
+	: IF LEFT_BRACKET expression RIGHT_BRACKET DO blockWithoutReturn DONE
+		(ELSIF LEFT_BRACKET expression RIGHT_BRACKET DO blockWithoutReturn DONE)* (ELSE DO blockWithoutReturn DONE)?
 	;
 	
 // loop definition
