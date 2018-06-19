@@ -12,19 +12,29 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by the {@code booleanAtom}
-	 * labeled alternative in {@link P2CParser#atom}.
+	 * Visit a parse tree produced by {@link P2CParser#identifier}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBooleanAtom(@NotNull P2CParser.BooleanAtomContext ctx);
+	T visitIdentifier(@NotNull P2CParser.IdentifierContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code idAtom}
-	 * labeled alternative in {@link P2CParser#atom}.
+	 * Visit a parse tree produced by {@link P2CParser#constant}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIdAtom(@NotNull P2CParser.IdAtomContext ctx);
+	T visitConstant(@NotNull P2CParser.ConstantContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link P2CParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression(@NotNull P2CParser.ExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link P2CParser#assignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignment(@NotNull P2CParser.AssignmentContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#ifDefinition}.
 	 * @param ctx the parse tree
@@ -32,19 +42,23 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfDefinition(@NotNull P2CParser.IfDefinitionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code for}
-	 * labeled alternative in {@link P2CParser#loopDefinition}.
+	 * Visit a parse tree produced by {@link P2CParser#loopDefinition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFor(@NotNull P2CParser.ForContext ctx);
+	T visitLoopDefinition(@NotNull P2CParser.LoopDefinitionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code atomExpr}
-	 * labeled alternative in {@link P2CParser#expression}.
+	 * Visit a parse tree produced by {@link P2CParser#start}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAtomExpr(@NotNull P2CParser.AtomExprContext ctx);
+	T visitStart(@NotNull P2CParser.StartContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link P2CParser#blockElement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlockElement(@NotNull P2CParser.BlockElementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#program}.
 	 * @param ctx the parse tree
@@ -52,25 +66,17 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(@NotNull P2CParser.ProgramContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code integer}
-	 * labeled alternative in {@link P2CParser#constant}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInteger(@NotNull P2CParser.IntegerContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code additiveExpr}
-	 * labeled alternative in {@link P2CParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAdditiveExpr(@NotNull P2CParser.AdditiveExprContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link P2CParser#returnStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitReturnStatement(@NotNull P2CParser.ReturnStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link P2CParser#parameterGroup}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameterGroup(@NotNull P2CParser.ParameterGroupContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#type}.
 	 * @param ctx the parse tree
@@ -78,12 +84,11 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitType(@NotNull P2CParser.TypeContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code while}
-	 * labeled alternative in {@link P2CParser#loopDefinition}.
+	 * Visit a parse tree produced by {@link P2CParser#varDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitWhile(@NotNull P2CParser.WhileContext ctx);
+	T visitVarDeclaration(@NotNull P2CParser.VarDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#blockWithoutReturn}.
 	 * @param ctx the parse tree
@@ -97,19 +102,11 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArgumentList(@NotNull P2CParser.ArgumentListContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code parExpr}
-	 * labeled alternative in {@link P2CParser#atom}.
+	 * Visit a parse tree produced by {@link P2CParser#funDesignator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParExpr(@NotNull P2CParser.ParExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code declarationElement}
-	 * labeled alternative in {@link P2CParser#blockElement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDeclarationElement(@NotNull P2CParser.DeclarationElementContext ctx);
+	T visitFunDesignator(@NotNull P2CParser.FunDesignatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#array}.
 	 * @param ctx the parse tree
@@ -117,12 +114,17 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArray(@NotNull P2CParser.ArrayContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code floating}
-	 * labeled alternative in {@link P2CParser#constant}.
+	 * Visit a parse tree produced by {@link P2CParser#funDefinition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFloating(@NotNull P2CParser.FloatingContext ctx);
+	T visitFunDefinition(@NotNull P2CParser.FunDefinitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link P2CParser#parameterList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameterList(@NotNull P2CParser.ParameterListContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#block}.
 	 * @param ctx the parse tree
@@ -130,12 +132,11 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(@NotNull P2CParser.BlockContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code loopELement}
-	 * labeled alternative in {@link P2CParser#blockElement}.
+	 * Visit a parse tree produced by {@link P2CParser#atom}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLoopELement(@NotNull P2CParser.LoopELementContext ctx);
+	T visitAtom(@NotNull P2CParser.AtomContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#primitiveType}.
 	 * @param ctx the parse tree
@@ -148,122 +149,4 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitResultType(@NotNull P2CParser.ResultTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link P2CParser#identifier}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIdentifier(@NotNull P2CParser.IdentifierContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link P2CParser#assignment}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssignment(@NotNull P2CParser.AssignmentContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link P2CParser#start}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStart(@NotNull P2CParser.StartContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code functionAtom}
-	 * labeled alternative in {@link P2CParser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctionAtom(@NotNull P2CParser.FunctionAtomContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code orExpr}
-	 * labeled alternative in {@link P2CParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOrExpr(@NotNull P2CParser.OrExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code nilAtom}
-	 * labeled alternative in {@link P2CParser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNilAtom(@NotNull P2CParser.NilAtomContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link P2CParser#parameterGroup}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParameterGroup(@NotNull P2CParser.ParameterGroupContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code relationalExpr}
-	 * labeled alternative in {@link P2CParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRelationalExpr(@NotNull P2CParser.RelationalExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link P2CParser#varDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVarDeclaration(@NotNull P2CParser.VarDeclarationContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code constantAtom}
-	 * labeled alternative in {@link P2CParser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConstantAtom(@NotNull P2CParser.ConstantAtomContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code assignmentElement}
-	 * labeled alternative in {@link P2CParser#blockElement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssignmentElement(@NotNull P2CParser.AssignmentElementContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code notExpr}
-	 * labeled alternative in {@link P2CParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNotExpr(@NotNull P2CParser.NotExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link P2CParser#funDesignator}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunDesignator(@NotNull P2CParser.FunDesignatorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link P2CParser#funDefinition}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunDefinition(@NotNull P2CParser.FunDefinitionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code multiplicationExpr}
-	 * labeled alternative in {@link P2CParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMultiplicationExpr(@NotNull P2CParser.MultiplicationExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link P2CParser#parameterList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParameterList(@NotNull P2CParser.ParameterListContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ifElement}
-	 * labeled alternative in {@link P2CParser#blockElement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIfElement(@NotNull P2CParser.IfElementContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code andExpr}
-	 * labeled alternative in {@link P2CParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAndExpr(@NotNull P2CParser.AndExprContext ctx);
 }

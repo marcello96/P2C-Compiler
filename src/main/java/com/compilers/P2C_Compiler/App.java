@@ -1,12 +1,10 @@
 package com.compilers.P2C_Compiler;
 
-import java.nio.file.Paths;
-import java.util.Scanner;
 
-import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+
 /**
  * Hello world!
  *
@@ -40,20 +38,34 @@ public class App
 	  System.out.println(_command);
 	  printDrink(_command);
 	}
+    @SuppressWarnings("deprecation")
     public static void main( String[] args )
     {
-      /*doTest("let a : array[10] of int;");
-      doTest("let _a12 : array[10] of int;");
-      doTest("let a : int;");
-      doTest("let _a12 : int;");
-      doTest("let _a12 : int = 214;");
-      doTest("let _a12 : int = 12.1234123;");
-      doTest("-12345 + 2341 + (23.212 / 123.2);");
-      doTest("fun asd(a:int, b:string) -> int do let ab_2 : int; return 342; done");
-      doTest("while (a == 3) do done");
-      doTest("while (1 <= 2) do let a_12 : int = -123; a_12 = 3; done");
-      doTest("if (a == 3) a = 4; elsif (a == 2) a = 2; elsif (a == 1) let _b12 : int = 12; else b_12 = -3.3;");
-      doTest("for (i = 2; i <= 3; i = i + 1) do i = i + 1; done");*/
+      /*InputStream is = System.in;
+      if ( args.length>0 ) {
+          String inputFile = args[0];
+          is = new FileInputStream(inputFile);
+      }
+      String dataspec = ""
+          + "if (a == 3) do\n"
+          + "let a : int = 3\n;"
+          + "done\n";
+      CharStream stream = new ANTLRInputStream(dataspec);
+      P2CLexer lexer = new P2CLexer(stream);
+      CommonTokenStream tokens = new CommonTokenStream(lexer);
+      P2CParser parser = new P2CParser(tokens);
+      
+      System.out.println("\n" + tree.getText() + "\n");
+      MyVisitor myVisior = new MyVisitor();
+      String result = myVisior.visitIfDefinition((IfDefinitionContext) tree);
+      
+      System.out.println("\n" + result + "\n");
+      */
+      /*File outFile = new File("out.c");
+      outFile.createNewFile();
+      FileOutputStream fout = new FileOutputStream(outFile);
+      fout.write(result.getBytes());
+      fout.close();*/
       
       /*doTest(
           "fun foo(n : int, result : int) -> int\n" 
