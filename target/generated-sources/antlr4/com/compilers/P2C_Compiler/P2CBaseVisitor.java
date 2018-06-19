@@ -137,6 +137,13 @@ public class P2CBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements P2
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitGlobalDefinitions(@NotNull P2CParser.GlobalDefinitionsContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitFunDefinition(@NotNull P2CParser.FunDefinitionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

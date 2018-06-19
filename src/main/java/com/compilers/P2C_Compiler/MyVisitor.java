@@ -28,7 +28,16 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	@Override
 	public String visitProgram(@NotNull P2CParser.ProgramContext ctx) {
 		writer.writeHeader();
-		super.visitProgram(ctx);
+		writer.writeln("#include <stdio.h>");
+		writer.writeln("");
+		
+		visitGlobalDefinitions(ctx.globalDefinitions());
+		
+		writer.writeln("");
+		writer.writeln("int main()");
+		writer.writeln("{");
+		visitBlockWithoutReturn(ctx.blockWithoutReturn());
+		writer.writeln("}");
 		writer.flush();
 		
 		return "";

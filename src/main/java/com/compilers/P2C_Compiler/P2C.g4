@@ -5,11 +5,12 @@ grammar P2C;
  */
  
 program
-	:	(varDeclaration SEMICOLON | funDefinition)* 
-	| DO blockWithoutReturn DONE
-
+	:	globalDefinitions DO blockWithoutReturn DONE
 	;
 
+globalDefinitions
+	:	(varDeclaration SEMICOLON | funDefinition)*
+	;
 
 start //do testow
 	:	varDeclaration SEMICOLON
