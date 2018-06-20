@@ -52,7 +52,7 @@ public class App
     @SuppressWarnings("deprecation")
     public static void main( String[] args ) throws IOException, URISyntaxException
     {
-      String input = Files.lines(Paths.get("Example.txt"))
+      String input = Files.lines(Paths.get("Example.p2c"))
             .collect(Collectors.joining("\n"));
       doTest(input);
       

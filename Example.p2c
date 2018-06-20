@@ -2,7 +2,7 @@ let a: int = 1;
 let b: int;
 do 
 	if (a == 3) do
-		a = 4;
+		c = 4;
 	done
 	elsif (a == 2) do
 		a = 4;

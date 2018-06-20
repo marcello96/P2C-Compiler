@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
@@ -33,18 +36,22 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	
 	@Override
 	public String visitProgram(@NotNull P2CParser.ProgramContext ctx) {
-		writer.writeHeader();
-		writer.writeln("#include <stdio.h>");
-		writer.writeln("");
-		writer.writeln(visit(ctx.globalDefinitions()));
-		
-		writer.writeln("");
-		writer.writeln("int main() {");
-		writer.write(visit(ctx.blockWithoutReturn()));
-		writer.writeln("return 0;");
-		writer.writeln("}");
-		writer.flush();
-		
+		try {
+			writer.writeHeader();
+			writer.writeln("#include <stdio.h>");
+			writer.writeln("");
+			writer.writeln(visit(ctx.globalDefinitions()));
+			
+			writer.writeln("");
+			writer.writeln("int main() {");
+			writer.write(visit(ctx.blockWithoutReturn()));
+			writer.writeln("return 0;");
+			writer.writeln("}");
+			writer.flush();
+		} catch(ParseCancellationException e) {
+			System.err.println();
+			System.err.println(e.getMessage());
+		}
 		return "";
 	}
 	
@@ -96,10 +103,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		Variable var = getVariableFromParameterGroup(ctx);
 		String ident = var.getIdent();
 		if(variables.containsKey(ident)) {
-			
-			//TODO CHANGE
-			System.err.println();
-			System.err.println("Error: Variable \"" + ident + "\" has been already initialized\n");
+			throw genParseError(ctx, "Variable \"" + ident + "\" has been already initialized\n");
 		} else {
 			variables.put(ident, var);
 		}
@@ -108,19 +112,19 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		return var.toString();
 	}
 	
+	//TODO must be fixed
 	@Override 
 	public String visitAssignment(@NotNull P2CParser.AssignmentContext ctx) {
 	  String ident = ctx.IDENT().getText();
 	  StringBuilder result = new StringBuilder();
 	  result.append(ident);
 	  if (ctx.LEFT_SQ_BRACKET() != null && ctx.RIGHT_SQ_BRACKET() != null) {
-	    checkContainFunction(ident);
+	    //checkContainFunction(ident);
 	    result.append("[")
 	          .append(ctx.INTEGER_CONSTANT().getText())
 	          .append("]");
 	  }
-	  else 
-	    checkContainVariable(ident);
+	  checkContainVariable(ident,ctx);
 	  result.append(" ")
 	        .append(ctx.ASSIGN().getText())
 	        .append(" ")
@@ -149,7 +153,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	  }
 	  if (ctx.IDENT() != null) {
 	      String ident = ctx.IDENT().getText();
-	      checkContainVariable(ident);
+	      checkContainVariable(ident,ctx);
 	  }
 	  return ctx.getText();
 	}
@@ -188,13 +192,14 @@ public class MyVisitor extends P2CBaseVisitor<String> {
                                          
       if(functions.containsKey(funIdent)){
     	  FunctionSpec fun = functions.get(funIdent);
-    	  if(fun.getParams().size() != params.size())
-    		  System.err.println("Error: function \"" + funIdent 
+    	  if(fun.getParams().size() != params.size()) {
+    		  throw genParseError(ctx, "Function \"" + funIdent 
     				  +"\" is defined with different number of parameters");
-      } else
-    	  System.err.println("Error: function \"" + funIdent 
-				  +"\" is not declared");
-  
+    	  }
+      } else {
+    	  throw genParseError(ctx, "Function \"" + funIdent + "\" is not declared");
+      }
+      
 	  String funDefString = params.stream()
 								  .collect(Collectors.joining(", "));
 	  
@@ -242,7 +247,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
         FunctionSpec funSpec = new FunctionSpec(funIdent,params,returnType);
         
         if(functions.containsKey(funIdent)) {
-        	System.err.println("Error: function \"" + funIdent + "\" has been already defined");
+        	throw genParseError(ctx, "Function \"" + funIdent + "\" has been already defined");
         } else
         	functions.put(funIdent, funSpec);
         
@@ -252,7 +257,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	}
 	
 	/**************************** PRIVATE METHODS *****************************/
-	private String collectStringFromChilds(RuleContext ctx, int childNo) {
+	private String collectStringFromChilds(ParserRuleContext ctx, int childNo) {
 		StringBuilder builder = new StringBuilder();
 		for(int i=0; i<childNo; ++i) {
 			if(ctx.getChild(i) instanceof TerminalNodeImpl)
@@ -284,23 +289,27 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		return new ReturnType(Type.valueOf(primitiveType.toUpperCase()), isArray);
 	}
 	
-	private boolean checkContainVariable(String key) {
+	private boolean checkContainVariable(String key, ParserRuleContext ctx) {
 	  if (!variables.containsKey(key)) {
-	    System.err.println();
-      System.err.println("Error: Variable \"" + key + "\" c cannot be resolved to a variable\n");
-      return true;
+		  throw genParseError(ctx, "Variable \"" + key 
+					+ "\" cannot be resolved to a variable\n");
 	  }
 	  else
 	    return false;
 	}
 	
-	private boolean checkContainFunction(String key) {
-    if (!functions.containsKey(key)) {
-      System.err.println();
-      System.err.println("Error: Function \"" + key + "\" c cannot be resolved to a function\n");
-      return true;
-    }
-    else
-      return false;
-  }
+	private boolean checkContainFunction(String key, ParserRuleContext ctx) {
+	    if (!functions.containsKey(key)) {
+			throw genParseError(ctx, "Function \"" 
+						+ key + "\" cannot be resolved to a function\n");
+	    }
+	    else
+	      return false;
+	}
+	
+	private ParseCancellationException genParseError(ParserRuleContext ctx, String msg) {
+		Token tok = ctx.getStart();
+		return new ParseCancellationException("Error line " + tok.getLine() + ":"
+				+ tok.getCharPositionInLine() + " " + msg);
+	}
 }
