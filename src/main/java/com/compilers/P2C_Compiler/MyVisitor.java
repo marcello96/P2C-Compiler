@@ -1,7 +1,10 @@
 package com.compilers.P2C_Compiler;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -31,12 +34,13 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		writer.writeln("#include <stdio.h>");
 		writer.writeln("");
 		
-		visitGlobalDefinitions(ctx.globalDefinitions());
+		writer.writeln(visit(ctx.globalDefinitions()));
 		
 		writer.writeln("");
 		writer.writeln("int main()");
 		writer.writeln("{");
-		visitBlockWithoutReturn(ctx.blockWithoutReturn());
+		writer.writeln(visit(ctx.blockWithoutReturn()));
+		writer.writeln("return 0;");
 		writer.writeln("}");
 		writer.flush();
 		
@@ -47,34 +51,23 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	@Override
 	public String visitVarDeclaration(@NotNull P2CParser.VarDeclarationContext ctx) {
 		String variable = visit(ctx.parameterGroup());
+		String result;
 		if(ctx.constant() !=  null) {
 			String assignment = ctx.constant().getText();
 			
-			writer.writeln(variable + " = " + assignment + ";"); 
+			result = variable + " = " + assignment + ";\n"; 
 		} else
-			writer.writeln(variable + ";");
+			result = variable + ";\n";
 		
-		return "";
+		return result;
 	}
 	
 	//TODO
 	// change grammar for assignment
 	@Override
 	public String visitParameterGroup(@NotNull P2CParser.ParameterGroupContext ctx) { 
-		String ident = ctx.identifier().getText();
-		String primitiveType = ctx.type().primitiveType().getText();
-		Variable var = new Variable(ident, Type.valueOf(primitiveType.toUpperCase()));
-		
-		String result = primitiveType + " " + ident;
-		if(ctx.type().array() != null) {
-			int size = Integer.parseInt(ctx.type().array().INTEGER_CONSTANT().getText());
-			
-			var.setArray(true);
-			var.setSize(size);
-			
-			result += "[" + size + "]";
-		}
-		
+		Variable var = getVariableFromParameterGroup(ctx);
+		String ident = var.getIdent();
 		if(variables.containsKey(ident)) {
 			
 			//TODO CHANGE
@@ -84,7 +77,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 			variables.put(ident, var);
 		}
 		
-		return result;
+		return var.toString();
 	}
 	
 	/*@Override
@@ -96,5 +89,53 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		String condition = visit(ctx.expression(0));
 	    String stat = visit(ctx.blockWithoutReturn(0));
 	    return String.format("if(%s){\n%s}", condition, stat);
+	}
+	
+	@Override
+	public String visitFunDefinition(@NotNull P2CParser.FunDefinitionContext ctx) {
+		String funIdent = ctx.identifier().getText();
+		List<Variable> params = ctx.parameterList().parameterGroup() != null ?
+                ctx.parameterList().parameterGroup().stream()
+                                                .map(this::getVariableFromParameterGroup)
+                                                .collect(Collectors.toList()) 
+                : Collections.emptyList();
+		
+        ReturnType returnType = (ctx.resultType() != null) 
+        		? getReturnType(ctx.resultType())
+        		: null;
+        		
+        FunctionSpec funSpec = new FunctionSpec(funIdent,params,returnType);
+        
+        if(functions.containsKey(funIdent)) {
+        	System.err.println("Error: function \"" + funIdent + "\" has been already defined");
+        } else
+        	functions.put(funIdent, funSpec);
+        
+        String block = super.visitFunDefinition(ctx);
+        
+		return funSpec.toString() + " {\r\n" + block + "\r\n}\r\n";
+	}
+	
+	/**************************** PRIVATE METHODS *****************************/
+	private Variable getVariableFromParameterGroup(P2CParser.ParameterGroupContext ctx) {
+		String ident = ctx.identifier().getText();
+		String primitiveType = ctx.type().primitiveType().getText();
+		Variable var = new Variable(ident, Type.valueOf(primitiveType.toUpperCase()));
+		
+		if(ctx.type().array() != null) {
+			int size = Integer.parseInt(ctx.type().array().INTEGER_CONSTANT().getText());
+			
+			var.setArray(true);
+			var.setSize(size);
+		}
+		
+		return var;
+	}
+	
+	private ReturnType getReturnType(P2CParser.ResultTypeContext ctx) {
+		String primitiveType = ctx.primitiveType().getText();
+		boolean isArray = ctx.arrayType() != null;
+		
+		return new ReturnType(Type.valueOf(primitiveType.toUpperCase()), isArray);
 	}
 }

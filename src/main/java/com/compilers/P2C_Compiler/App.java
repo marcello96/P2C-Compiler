@@ -67,24 +67,16 @@ public class App
       fout.write(result.getBytes());
       fout.close();*/
       
-      /*doTest(
+      doTest(
           "fun foo(n : int, result : int) -> int\n" 
           +"do\r\n"  
           +"  return n;\n" 
           +"done\n"
           + "do\n"
           + "let a_12 : int = 1;\n"
-          + "if (a_12 == 1)\n"
-          + "a_12 = 2;\n"
-          + "while (i < 3)\n"
-          + "do\n"
-          + "done\n"
-          + "else\n"
-          + "let a_13 : int = 3;\n"
-          + "a_13 = -123;\n"
           + "done\n"
           );
-      */
+      
     	/*String str = "";
     	Scanner s = new Scanner(System.in);
     	while(!str.equals("exit")) {
@@ -92,9 +84,9 @@ public class App
             printDrink(str);
     	}*/
     	
-      doTest("let a : int;\n"
+      /*doTest("let a : int;\n"
       		+ "let a : double;\n"
       		+ "do\n"
-      		+ "done\n");
+      		+ "done\n");*/
     }
 }

@@ -51,6 +51,10 @@ array
 	: ARRAY LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET OF
 	;	
 	
+arrayType
+	: ARRAY OF
+	;
+	
 constant
 	: '-'? INTEGER_CONSTANT
 	| '-'? FLOATING_CONSTANT
@@ -90,7 +94,8 @@ expression
 	
 // function definition
 funDefinition
-	:	FUN identifier LEFT_BRACKET parameterList? RIGHT_BRACKET (ARROW resultType)? DO block DONE
+	:	FUN identifier LEFT_BRACKET parameterList? RIGHT_BRACKET (ARROW resultType)? 
+		DO block DONE
 		
 	;
 	
@@ -99,7 +104,7 @@ parameterList
 	;
 	
 resultType
-	: type
+	: arrayType? primitiveType
 	;
 	
 funDesignator
