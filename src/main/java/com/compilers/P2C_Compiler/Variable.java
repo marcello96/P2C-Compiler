@@ -56,6 +56,8 @@ public class Variable {
 
 	@Override
 	public String toString() {
-		return "Variable [ident=" + ident + ", type=" + type + ", isArray=" + isArray + ", size=" + size + "]";
+		String array = isArray ? " [" + size + "]" : "";
+		
+		return type.toString().toLowerCase() + " " + ident + array ;
 	}
 }
