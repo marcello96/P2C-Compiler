@@ -8,10 +8,12 @@ do
 	return a;
 done 
 
-myStruc = record
+myStruct = record
 	let first: int;
 	let second: double;
 end;
+let g: double;
+let f: myStruct;
 do 
 	if (a == 3) do
 		c = 4;
@@ -32,6 +34,8 @@ do
 	done
 	
 	for(x in 10..-10 by  2) do
+		let t: myStruct;
+		a = a + x;
 		while(x<5) do
 		done
 	done

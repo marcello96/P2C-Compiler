@@ -16,6 +16,8 @@ recordDefinition
 	: IDENT ASSIGN RECORD (varDeclaration SEMICOLON)* END
 	;
 
+recordType: IDENT;
+
 varDeclaration 
 	: LET parameterGroup (ASSIGN constant)?
 	;
@@ -32,7 +34,7 @@ parameterGroup
 identifier : IDENT ;	
 
 type
-	:	array? (primitiveType)
+	:	array? (primitiveType | recordType)
 	;
 
 
