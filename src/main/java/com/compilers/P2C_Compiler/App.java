@@ -28,10 +28,12 @@ public class App
 	    ParseTree parseTree = parser.program();
 	    // Add listener
 	    MyVisitor visitor = new MyVisitor(writer);
-	    visitor.visit(parseTree);
+	    String result = visitor.visit(parseTree);
         
 	    System.out.println();
 	    System.out.println(parseTree.toStringTree(parser)); // print LISP-style tree
+	    System.out.println();
+	    System.out.println(result);
 	}
 	
 	private static void doTest(String _command) {
@@ -93,8 +95,9 @@ public class App
     	}*/
     	
       doTest("let a : int;\n"
-      		+ "let a : double;\n"
       		+ "do\n"
+          + "if (a == 3 and !(b == a)) do\n"
+          + "done\n"
       		+ "done\n");
     }
 }

@@ -36,7 +36,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		writer.writeln("");
 		writer.writeln("int main()");
 		writer.writeln("{");
-		visitBlockWithoutReturn(ctx.blockWithoutReturn());
+		writer.writeln(visitBlockWithoutReturn(ctx.blockWithoutReturn()));
 		writer.writeln("}");
 		writer.flush();
 		
@@ -87,6 +87,18 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		return result;
 	}
 	
+	//To change
+	@Override 
+	public String visitBlockWithoutReturn(@NotNull P2CParser.BlockWithoutReturnContext ctx) { 
+	  return visitChildren(ctx); 
+	}
+  
+	//To Change
+	@Override 
+	public String visitAtom(@NotNull P2CParser.AtomContext ctx) { 
+	  return visitChildren(ctx); 
+	}
+	
 	@Override public String visitOperators(@NotNull P2CParser.OperatorsContext ctx) { 
     return OperatorMapping.map(ctx.getText());
   }
@@ -94,7 +106,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
   @Override 
   public String visitExpression(@NotNull P2CParser.ExpressionContext ctx) { 
      if (ctx.atom() != null) {
-       return visit(ctx.atom());
+       return ctx.getText();
      }
      if (ctx.EXCLAMATION() != null) {
        return "!" + visit(ctx.expression(0));
@@ -110,11 +122,28 @@ public class MyVisitor extends P2CBaseVisitor<String> {
      return result.toString();
   }
   
+  //To change
   @Override 
   public String visitIfDefinition(@NotNull P2CParser.IfDefinitionContext ctx) { 
     
     String condition = visit(ctx.expression(0));
     String stat = visit(ctx.blockWithoutReturn(0));
-    return String.format("if (%s){\n%s}", condition, stat);
+    
+    StringBuilder elseIfStat = new StringBuilder();
+    int numElseIf = ctx.ELSIF().size();
+    for (int i = 0; i < numElseIf; i++) {
+      elseIfStat.append("else if (")
+                .append(visit(ctx.expression(i + 1)))
+                .append("){\n")
+                .append(visit(ctx.blockWithoutReturn(i+ 1)))
+                .append("\n}\n");
+    }
+    StringBuilder elseStat = new StringBuilder();
+    if (ctx.ELSE() != null) {
+      elseStat.append("else {")
+              .append(visit(ctx.blockWithoutReturn(1 + numElseIf)))
+              .append("\n}\n");
+    }
+    return String.format("if (%s){\n%s}\n%s%s", condition, stat, elseIfStat.toString(), elseStat.toString());
   }
 }
