@@ -9,7 +9,11 @@ program
 	;
 
 globalDefinitions
-	:	(varDeclaration SEMICOLON | funDefinition)*
+	:	(varDeclaration SEMICOLON | funDefinition | recordDefinition SEMICOLON)*
+	;
+
+recordDefinition
+	: IDENT ASSIGN RECORD (varDeclaration SEMICOLON)* END
 	;
 
 varDeclaration 
@@ -28,7 +32,7 @@ parameterGroup
 identifier : IDENT ;	
 
 type
-	:	array? primitiveType
+	:	array? (primitiveType)
 	;
 
 
@@ -159,6 +163,8 @@ RETURN : 'return';
 LET : 'let' ;
 OF : 'of' ;
 ARRAY : 'array' ;
+RECORD : 'record' ;
+END : 'end' ;
 
 UNDERLINE : '_' ;
 LEFT_SQ_BRACKET : '[' ;

@@ -94,8 +94,16 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		return result;
 	}
 	
-	//TODO
-	// change grammar for assignment
+	@Override 
+	public String visitRecordDefinition(@NotNull P2CParser.RecordDefinitionContext ctx) { 
+	  String varDeclaration = ctx.varDeclaration().stream()
+	                                              .map(e-> visit(e))
+	                                              .collect(Collectors.joining("\n"));
+	  String ident = ctx.IDENT().getText();
+	  return String.format("struct %s{\n %s \n} %s;", ident, varDeclaration, ident);
+	}
+  
+	
 	@Override
 	public String visitParameterGroup(@NotNull P2CParser.ParameterGroupContext ctx) { 
 	
@@ -111,9 +119,9 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		return var.toString();
 	}
 	
-	//TODO must be fixed
 	@Override 
 	public String visitAssignment(@NotNull P2CParser.AssignmentContext ctx) {
+	  //return collectStringFromChilds(ctx, ctx.getChildCount()); 
 	  String ident = ctx.IDENT().getText();
 	  Variable var = variables.get(ident);
 	  StringBuilder result = new StringBuilder();

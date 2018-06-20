@@ -2,6 +2,10 @@ let a: int = 1;
 let b: int;
 let c: int;
 let d: array [3][4] of double;
+myStruc = record
+	let first: int;
+	let second: double;
+end;
 do 
 	if (a == 3) do
 		c = 4;

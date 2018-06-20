@@ -108,6 +108,12 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayType(@NotNull P2CParser.ArrayTypeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link P2CParser#recordDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRecordDefinition(@NotNull P2CParser.RecordDefinitionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link P2CParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
