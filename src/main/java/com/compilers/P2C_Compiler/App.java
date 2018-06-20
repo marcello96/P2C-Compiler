@@ -97,6 +97,10 @@ public class App
       doTest("let a : int;\n"
       		+ "do\n"
           + "if (a == 3 and !(b == a)) do\n"
+          + "\ta = 2;\n"
+          + "done\n"
+          + "else do\n"
+          + "\ta = 4;\n"
           + "done\n"
       		+ "done\n");
     }

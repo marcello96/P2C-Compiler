@@ -34,9 +34,9 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		visitGlobalDefinitions(ctx.globalDefinitions());
 		
 		writer.writeln("");
-		writer.writeln("int main()");
-		writer.writeln("{");
+		writer.writeln("int main() {");
 		writer.writeln(visitBlockWithoutReturn(ctx.blockWithoutReturn()));
+		writer.writeln("return 0;");
 		writer.writeln("}");
 		writer.flush();
 		
@@ -96,7 +96,9 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	//To Change
 	@Override 
 	public String visitAtom(@NotNull P2CParser.AtomContext ctx) { 
-	  return visitChildren(ctx); 
+	  if (ctx.expression() != null)
+	    return visit(ctx.expression());
+	  return ctx.getText();
 	}
 	
 	@Override public String visitOperators(@NotNull P2CParser.OperatorsContext ctx) { 
@@ -106,7 +108,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
   @Override 
   public String visitExpression(@NotNull P2CParser.ExpressionContext ctx) { 
      if (ctx.atom() != null) {
-       return ctx.getText();
+       return visitAtom(ctx.atom());
      }
      if (ctx.EXCLAMATION() != null) {
        return "!" + visit(ctx.expression(0));
@@ -132,7 +134,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
     StringBuilder elseIfStat = new StringBuilder();
     int numElseIf = ctx.ELSIF().size();
     for (int i = 0; i < numElseIf; i++) {
-      elseIfStat.append("else if (")
+      elseIfStat.append("else if (\n")
                 .append(visit(ctx.expression(i + 1)))
                 .append("){\n")
                 .append(visit(ctx.blockWithoutReturn(i+ 1)))
@@ -140,7 +142,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
     }
     StringBuilder elseStat = new StringBuilder();
     if (ctx.ELSE() != null) {
-      elseStat.append("else {")
+      elseStat.append("else {\n")
               .append(visit(ctx.blockWithoutReturn(1 + numElseIf)))
               .append("\n}\n");
     }
