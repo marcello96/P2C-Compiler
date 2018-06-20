@@ -187,11 +187,11 @@ public class MyVisitor extends P2CBaseVisitor<String> {
     StringBuilder elseIfStat = new StringBuilder();
     int numElseIf = ctx.ELSIF().size();
     for (int i = 0; i < numElseIf; i++) {
-      elseIfStat.append("else if (\n")
+      elseIfStat.append("else if (")
                 .append(visit(ctx.expression(i + 1)))
                 .append("){\n")
                 .append(visit(ctx.blockWithoutReturn(i+ 1)))
-                .append("\n}\n");
+                .append("}\n");
     }
     StringBuilder elseStat = new StringBuilder();
     if (ctx.ELSE() != null) {
