@@ -2,8 +2,10 @@ package com.compilers.P2C_Compiler;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -19,6 +21,7 @@ import com.compilers.P2C_Compiler.P2CParser;
 public class MyVisitor extends P2CBaseVisitor<String> {
 	private Map<String, Variable> variables;
 	private Map<String, FunctionSpec> functions;
+	private Set<String> structs;
 	@SuppressWarnings("unused")
   private boolean isInFunctionDefinition = false;
 	private FileWriter writer;
@@ -31,6 +34,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		this.writer = writer;
 		variables = new HashMap<>();
 		functions = new HashMap<>();
+		structs =  new HashSet<>();
 	}
 	
 	@Override
@@ -100,7 +104,8 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	                                              .map(e-> visit(e))
 	                                              .collect(Collectors.joining("\n"));
 	  String ident = ctx.IDENT().getText();
-	  return String.format("struct %s{\n %s \n} %s;", ident, varDeclaration, ident);
+	  structs.add(ident);
+	  return String.format("struct %s{\n %s \n} %s;\n", ident, varDeclaration, ident);
 	}
   
 	
@@ -288,8 +293,19 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	}
 	private Variable getVariableFromParameterGroup(P2CParser.ParameterGroupContext ctx) {
 		String ident = ctx.identifier().getText();
-		String primitiveType = ctx.type().primitiveType().getText();
-		Variable var = new Variable(ident, Type.valueOf(primitiveType.toUpperCase()));
+		String primitiveType = null;
+		Variable var = null;
+		if (ctx.type().recordType() == null) {
+		  primitiveType = ctx.type().primitiveType().getText();
+		  var = new Variable(ident, Type.valueOf(primitiveType.toUpperCase()));
+		}
+		else {
+		  String type = ctx.type().recordType().getText();
+		  if (structs.contains(type))
+		    var = new Variable(ident, type);
+		  else throw genParseError(ctx, "Struct \"" + type
+          + "\" cannot be resolved to a struct\n");
+		}
 		
 		if(ctx.type().array() != null) {
 			var.setArray(true);
@@ -298,7 +314,6 @@ public class MyVisitor extends P2CBaseVisitor<String> {
                                      .map(e -> Integer.parseInt(e.getText()))
                                      .collect(Collectors.toList());
 			var.setSize(size);
-                                    
                                     
 		}
 		

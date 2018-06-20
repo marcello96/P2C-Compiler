@@ -10,6 +10,9 @@ public class Variable {
 	private boolean isArray;
 	private List<Integer> size;
 	
+	private boolean isStruct;
+	private String structName;
+
 	public Variable(String ident, Type type, List<Integer> size) {
 		if(size.stream().anyMatch(e -> e < 0)) 
 			throw new IllegalArgumentException("Array size must be nonnegative number");
@@ -25,6 +28,14 @@ public class Variable {
 		this.type = type;
 		this.isArray = false;
 	}
+	
+	public Variable(String ident, String structName) {
+    this.ident = ident;
+    this.type = Type.STRUCT;
+    this.structName = structName;
+    this.isArray = false;
+    this.isStruct = true;
+  }
 
 	public String getIdent() {
 		return ident;
@@ -40,6 +51,10 @@ public class Variable {
 
 	public void setType(Type type) {
 		this.type = type;
+	}
+	
+	public boolean isStruct() {
+	  return isStruct;
 	}
 
 	public boolean isArray() {
@@ -73,10 +88,12 @@ public class Variable {
     return true;
   }
   
+  
   @Override
 	public String toString() {
 		String array = isArray ? size.stream().map(e -> "[" + e + "]").collect(Collectors.joining()) : "";
-		
-		return type.toString().toLowerCase() + " " + ident + array ;
+		String returnType = type.toString().equals(Type.STRUCT.toString()) ? structName : type.toString().toLowerCase(); 
+		return returnType + " " + ident + array ;
 	}
+
 }
