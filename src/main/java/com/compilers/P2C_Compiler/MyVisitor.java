@@ -33,7 +33,6 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		writer.writeHeader();
 		writer.writeln("#include <stdio.h>");
 		writer.writeln("");
-		
 		writer.writeln(visit(ctx.globalDefinitions()));
 		
 		writer.writeln("");
@@ -54,11 +53,13 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		String result;
 		if(ctx.constant() !=  null) {
 			String assignment = ctx.constant().getText();
-			
+		
 			result = variable + " = " + assignment + ";\n"; 
 		} else
+
 			result = variable + ";\n";
 		
+
 		return result;
 	}
 	
@@ -66,6 +67,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	// change grammar for assignment
 	@Override
 	public String visitParameterGroup(@NotNull P2CParser.ParameterGroupContext ctx) { 
+	
 		Variable var = getVariableFromParameterGroup(ctx);
 		String ident = var.getIdent();
 		if(variables.containsKey(ident)) {
@@ -77,20 +79,69 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 			variables.put(ident, var);
 		}
 		
+
 		return var.toString();
 	}
 	
-	/*@Override
-	public String visitExpression*/
 	
+	public String visitBlockWithoutReturn(@NotNull P2CParser.BlockWithoutReturnContext ctx) { 
+	  return visitChildren(ctx); 
+	}
+ 
+	//To Change
 	@Override 
-	public String visitIfDefinition(@NotNull P2CParser.IfDefinitionContext ctx) { 
-	  
-		String condition = visit(ctx.expression(0));
-	    String stat = visit(ctx.blockWithoutReturn(0));
-	    return String.format("if(%s){\n%s}", condition, stat);
+	public String visitAtom(@NotNull P2CParser.AtomContext ctx) { 
+	  return visitChildren(ctx); 
 	}
 	
+	@Override public String visitOperators(@NotNull P2CParser.OperatorsContext ctx) { 
+    return OperatorMapping.map(ctx.getText());
+  }
+  
+  @Override 
+  public String visitExpression(@NotNull P2CParser.ExpressionContext ctx) { 
+     if (ctx.atom() != null) {
+       return ctx.getText();
+     }
+     if (ctx.EXCLAMATION() != null) {
+       return "!" + visit(ctx.expression(0));
+     }
+     
+     StringBuilder result = new StringBuilder();
+     result.append(visit(ctx.expression(0)));
+     result.append(" ");
+     result.append(visit(ctx.operators()));
+     result.append(" ");
+     result.append(visit(ctx.expression(1)));
+     
+     return result.toString();
+  }
+  
+  //To change
+  @Override 
+  public String visitIfDefinition(@NotNull P2CParser.IfDefinitionContext ctx) { 
+    
+    String condition = visit(ctx.expression(0));
+    String stat = visit(ctx.blockWithoutReturn(0));
+    
+    StringBuilder elseIfStat = new StringBuilder();
+    int numElseIf = ctx.ELSIF().size();
+    for (int i = 0; i < numElseIf; i++) {
+      elseIfStat.append("else if (")
+                .append(visit(ctx.expression(i + 1)))
+                .append("){\n")
+                .append(visit(ctx.blockWithoutReturn(i+ 1)))
+                .append("\n}\n");
+    }
+    StringBuilder elseStat = new StringBuilder();
+    if (ctx.ELSE() != null) {
+      elseStat.append("else {")
+              .append(visit(ctx.blockWithoutReturn(1 + numElseIf)))
+              .append("\n}\n");
+    }
+    return String.format("if (%s){\n%s}\n%s%s", condition, stat, elseIfStat.toString(), elseStat.toString());
+  }
+
 	@Override
 	public String visitFunDefinition(@NotNull P2CParser.FunDefinitionContext ctx) {
 		String funIdent = ctx.identifier().getText();
