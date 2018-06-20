@@ -2,6 +2,12 @@ let a: int = 1;
 let b: int;
 let c: int;
 let d: array [3][4] of double;
+
+fun foo(a:int, b:int) -> int
+do
+	return a;
+done 
+
 myStruc = record
 	let first: int;
 	let second: double;
@@ -14,7 +20,7 @@ do
 		a = 4;
 	done
 	elsif (a == 5) do
-		a = 5;
+		a = foo(1,3);
 		d[1][3] = 6.0;
 		let e : array[1] of int;
 	done
@@ -24,4 +30,10 @@ do
 		done
 		a = 4;
 	done
+	
+	for(x in 10..-10 by  2) do
+		while(x<5) do
+		done
+	done
+	
 done

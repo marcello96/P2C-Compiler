@@ -59,12 +59,18 @@ ifDefinition
 	: IF LEFT_BRACKET expression RIGHT_BRACKET DO blockWithoutReturn DONE
 		(ELSIF LEFT_BRACKET expression RIGHT_BRACKET DO blockWithoutReturn DONE)* (ELSE DO blockWithoutReturn DONE)?
 	;
-	
-// loop definition
-loopDefinition
-	: WHILE LEFT_BRACKET expression RIGHT_BRACKET DO blockWithoutReturn DONE 
-	| FOR LEFT_BRACKET assignment SEMICOLON expression SEMICOLON assignment RIGHT_BRACKET DO blockWithoutReturn DONE
-  ;
+  
+whileDefinition
+	: WHILE LEFT_BRACKET expression RIGHT_BRACKET DO blockWithoutReturn DONE
+	;
+
+forDefinition
+	: FOR LEFT_BRACKET identifier IN range RIGHT_BRACKET DO blockWithoutReturn DONE
+	;
+  
+range
+	: constant DOUBLE_DOT constant (BY INTEGER_CONSTANT)?
+	;
 
 	
 expression
@@ -116,7 +122,8 @@ argumentList
 blockElement
 	: varDeclaration SEMICOLON	
 	| assignment SEMICOLON			
-	| loopDefinition						
+	| whileDefinition
+	| forDefinition						
 	| ifDefinition 							
 	;	
 	
@@ -156,6 +163,8 @@ WHILE : 'while' ;
 DO : 'do';
 DONE : 'done';
 FOR: 'for';
+BY: 'by';
+IN: 'in';
 
 FUN : 'fun' ;
 RETURN : 'return';
@@ -202,6 +211,7 @@ ARROW : '->';
 COLON : ':' ;
 COMMA : ',' ;
 SEMICOLON: ';';
+DOUBLE_DOT: '..';
 
 
 

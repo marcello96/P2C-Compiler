@@ -243,12 +243,56 @@ public class MyVisitor extends P2CBaseVisitor<String> {
     }
     StringBuilder elseStat = new StringBuilder();
     if (ctx.ELSE() != null) {
-      elseStat.append("else {\n")
+    	elseStat.append("else {\n")
               .append(visit(ctx.blockWithoutReturn(1 + numElseIf)))
               .append("}\n");
     }
     return String.format("if (%s){\n%s}\n%s%s", condition, stat, elseIfStat.toString(), elseStat.toString());
   }
+  
+	@Override
+	public String visitWhileDefinition(@NotNull P2CParser.WhileDefinitionContext ctx) {
+		String expression = visit(ctx.expression());
+		String block = visit(ctx.blockWithoutReturn());
+		
+		return "while(" + expression + ") {\r\n" + block + "\r\n}\r\n" ;
+	}
+	
+	@Override
+	public String visitForDefinition(@NotNull P2CParser.ForDefinitionContext ctx) {
+		String var = ctx.identifier().getText();
+		if(variables.containsKey(var)) {
+			throw genParseError(ctx, "Variable \"" + var + "\" has been already initialized\n");
+		} else {
+			variables.put(var, new Variable(var,Type.INT));
+		}
+		
+		String block = visit(ctx.blockWithoutReturn());
+		//range
+		int begVal = Integer.valueOf(ctx.range().constant(0).getText());
+		int endVal = Integer.valueOf(ctx.range().constant(1).getText());
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("for(int " + var + " = " + begVal + "; ");
+		int offset = 1;
+		if(ctx.range().BY() != null)
+			offset = Integer.parseInt(ctx.range().INTEGER_CONSTANT().getText());
+		
+		if(endVal >= begVal) {
+			builder.append(var + " <= " + endVal + "; ");
+			builder.append((offset == 1) ? ("++" + var) : (var + " = " + var + " + " + offset));
+		} else {
+			builder.append(var + " >= " + endVal + "; ");
+			builder.append((offset == 1) ? ("--" + var) : (var + " = " + var + " - " + offset));
+		}
+		
+		builder.append(") {\r\n");
+		builder.append(block);
+		builder.append("\r\n}\r\n");
+		
+		return builder.toString();
+	}
+
 
 	@Override
 	public String visitFunDefinition(@NotNull P2CParser.FunDefinitionContext ctx) {

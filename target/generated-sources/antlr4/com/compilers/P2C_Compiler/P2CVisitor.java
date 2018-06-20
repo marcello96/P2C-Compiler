@@ -24,11 +24,11 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfDefinition(@NotNull P2CParser.IfDefinitionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link P2CParser#loopDefinition}.
+	 * Visit a parse tree produced by {@link P2CParser#range}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLoopDefinition(@NotNull P2CParser.LoopDefinitionContext ctx);
+	T visitRange(@NotNull P2CParser.RangeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#program}.
 	 * @param ctx the parse tree
@@ -59,6 +59,12 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArgumentList(@NotNull P2CParser.ArgumentListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link P2CParser#forDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForDefinition(@NotNull P2CParser.ForDefinitionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#array}.
 	 * @param ctx the parse tree
@@ -155,6 +161,12 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunDefinition(@NotNull P2CParser.FunDefinitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link P2CParser#whileDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhileDefinition(@NotNull P2CParser.WhileDefinitionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link P2CParser#parameterList}.
 	 * @param ctx the parse tree
