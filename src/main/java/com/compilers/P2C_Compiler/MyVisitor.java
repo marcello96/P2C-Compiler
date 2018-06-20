@@ -37,7 +37,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		
 		writer.writeln("");
 		writer.writeln("int main() {");
-		writer.writeln(visit(ctx.blockWithoutReturn()));
+		writer.write(visit(ctx.blockWithoutReturn()));
 		writer.writeln("return 0;");
 		writer.writeln("}");
 		writer.flush();
@@ -82,12 +82,55 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		return var.toString();
 	}
 	
+	@Override 
+	public String visitAssignment(@NotNull P2CParser.AssignmentContext ctx) {
+	  String ident = ctx.IDENT().getText();
+	  StringBuilder result = new StringBuilder();
+	  result.append(ident);
+	  if (ctx.LEFT_SQ_BRACKET() != null && ctx.RIGHT_SQ_BRACKET() != null) {
+	    checkContainFunction(ident);
+	    result.append("[")
+	          .append(ctx.INTEGER_CONSTANT().getText())
+	          .append("]");
+	  }
+	  else 
+	    checkContainVariable(ident);
+	  result.append(" ")
+	        .append(ctx.ASSIGN().getText())
+	        .append(" ")
+	        .append(visit(ctx.expression()));
+	  return result.toString();
+	  
+	}
 	
+	@Override 
+  public String visitBlockElement(@NotNull P2CParser.BlockElementContext ctx) { 
+	  if (ctx.varDeclaration() != null) {
+	    return visit(ctx.varDeclaration());
+	  }
+	  if(ctx.ifDefinition() != null) {
+	    return visit(ctx.ifDefinition());
+	  }
+	  if (ctx.loopDefinition() != null) {
+	    return visit(ctx.loopDefinition());
+	  }
+	  if (ctx.assignment() != null) {
+	    return visit(ctx.assignment());
+	  }
+	  return ctx.getText();
+  }
+	
+	@Override 
 	public String visitBlockWithoutReturn(@NotNull P2CParser.BlockWithoutReturnContext ctx) { 
-	  return visitChildren(ctx); 
+	  int numBlockElement = ctx.blockElement().size();
+	  StringBuilder result = new StringBuilder();
+	  for (int i = 0; i < numBlockElement; i++) {
+	    result.append(visit(ctx.blockElement(i)))
+	          .append("\n");
+	  }
+	  return result.toString();
 	}
  
-	//To Change
 	@Override 
 	public String visitAtom(@NotNull P2CParser.AtomContext ctx) { 
 	  if (ctx.expression() != null) {
@@ -101,6 +144,13 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	    return "1";
 	  if (ctx.FALSE() != null)
 	    return "0";
+	  if (ctx.funDesignator() != null) {
+	    return visit(ctx.funDesignator());
+	  }
+	  if (ctx.IDENT() != null) {
+	      String ident = ctx.IDENT().getText();
+	      checkContainVariable(ident);
+	  }
 	  return ctx.getText();
 	}
 	
@@ -147,7 +197,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
     if (ctx.ELSE() != null) {
       elseStat.append("else {\n")
               .append(visit(ctx.blockWithoutReturn(1 + numElseIf)))
-              .append("\n}\n");
+              .append("}\n");
     }
     return String.format("if (%s){\n%s}\n%s%s", condition, stat, elseIfStat.toString(), elseStat.toString());
   }
@@ -199,4 +249,24 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		
 		return new ReturnType(Type.valueOf(primitiveType.toUpperCase()), isArray);
 	}
+	
+	private boolean checkContainVariable(String key) {
+	  if (!variables.containsKey(key)) {
+	    System.err.println();
+      System.err.println("Error: Variable \"" + key + "\" c cannot be resolved to a variable\n");
+      return true;
+	  }
+	  else
+	    return false;
+	}
+	
+	private boolean checkContainFunction(String key) {
+    if (!functions.containsKey(key)) {
+      System.err.println();
+      System.err.println("Error: Function \"" + key + "\" c cannot be resolved to a function\n");
+      return true;
+    }
+    else
+      return false;
+  }
 }

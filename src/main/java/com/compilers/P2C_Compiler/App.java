@@ -81,6 +81,7 @@ public class App
            +"  return n;\n" 
            +"done\n"
            + "let a : int;\n"
+           + "let b : int;\n"
       		+ "do\n"
           + "if (a == 3 and !(b == a)) do\n"
           + "\ta = 2;\n"

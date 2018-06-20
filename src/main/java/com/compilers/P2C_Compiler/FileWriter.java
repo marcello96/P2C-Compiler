@@ -21,6 +21,10 @@ public class FileWriter {
 		writer.println(content);
 	}
 	
+	 public void write(String content) {
+	    writer.print(content);
+	  }
+	
 	public void writeHeader() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		
