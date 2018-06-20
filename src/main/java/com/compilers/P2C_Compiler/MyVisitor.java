@@ -125,37 +125,11 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	        .append(ctx.ASSIGN().getText())
 	        .append(" ")
 	        .append(visit(ctx.expression()));
-	  return result.toString();
+	  return result.toString() + ";\r\n";
 	  
 	}
 	
-	@Override 
-  public String visitBlockElement(@NotNull P2CParser.BlockElementContext ctx) { 
-	  if (ctx.varDeclaration() != null) {
-	    return visit(ctx.varDeclaration());
-	  }
-	  if(ctx.ifDefinition() != null) {
-	    return visit(ctx.ifDefinition());
-	  }
-	  if (ctx.loopDefinition() != null) {
-	    return visit(ctx.loopDefinition());
-	  }
-	  if (ctx.assignment() != null) {
-	    return visit(ctx.assignment());
-	  }
-	  return ctx.getText();
-  }
 	
-	@Override 
-	public String visitBlockWithoutReturn(@NotNull P2CParser.BlockWithoutReturnContext ctx) { 
-	  int numBlockElement = ctx.blockElement().size();
-	  StringBuilder result = new StringBuilder();
-	  for (int i = 0; i < numBlockElement; i++) {
-	    result.append(visit(ctx.blockElement(i)))
-	          .append("\n");
-	  }
-	  return result.toString();
-	}
  
 	@Override 
 	public String visitAtom(@NotNull P2CParser.AtomContext ctx) { 
