@@ -2,6 +2,16 @@ package com.compilers.P2C_Compiler;
 
 
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
+
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -40,54 +50,25 @@ public class App
 	  printDrink(_command);
 	}
     @SuppressWarnings("deprecation")
-    public static void main( String[] args )
+    public static void main( String[] args ) throws IOException, URISyntaxException
     {
-      /*InputStream is = System.in;
-      if ( args.length>0 ) {
-          String inputFile = args[0];
-          is = new FileInputStream(inputFile);
-      }
-      String dataspec = ""
-          + "if (a == 3) do\n"
-          + "let a : int = 3\n;"
-          + "done\n";
-      CharStream stream = new ANTLRInputStream(dataspec);
-      P2CLexer lexer = new P2CLexer(stream);
-      CommonTokenStream tokens = new CommonTokenStream(lexer);
-      P2CParser parser = new P2CParser(tokens);
+      String input = Files.lines(Paths.get("Example.txt"))
+            .collect(Collectors.joining("\n"));
+      doTest(input);
       
-      System.out.println("\n" + tree.getText() + "\n");
-      MyVisitor myVisior = new MyVisitor();
-      String result = myVisior.visitIfDefinition((IfDefinitionContext) tree);
-      
-      System.out.println("\n" + result + "\n");
-      */
-      /*File outFile = new File("out.c");
-      outFile.createNewFile();
-      FileOutputStream fout = new FileOutputStream(outFile);
-      fout.write(result.getBytes());
-      fout.close();*/
-      
-      doTest(
-          "fun foo(n : int, result : int) -> int\n" 
-          +"do\r\n"  
-          +"  return n;\n" 
-          +"done\n"
-          +"let aa : int;\n"
-          + "do\n"
-          + "let a_12 : int = 1;\n"
-          + "	if (a == 3) do\n"
-          + "		aa = foo(1,1);\n"
-          + "	done\n"
+       /*doTest(    "fun foo(n : int, result : int) -> int\n" 
+           +"do\r\n"  
+           +"  return n;\n" 
+           +"done\n"
+           + "let a : int;\n"
+           + "let b : int;\n"
+      		+ "do\n"
+          + "if (a == 3 and !(b == a)) do\n"
+          + "\ta = 2;\n"
           + "done\n"
-          );
-      
-    	/*String str = "";
-    	Scanner s = new Scanner(System.in);
-    	while(!str.equals("exit")) {
-    		str = s.nextLine();
-            printDrink(str);
-    	}*/
-    	
+          + "else do\n"
+          + "\ta = 4;\n"
+          + "done\n"
+      		+ "done\n");*/
     }
 }

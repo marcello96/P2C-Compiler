@@ -1,23 +1,19 @@
-fun foo(n : int, result : int) -> int
-do
-	return foo(n - 1, result * n);
-done
-
+let a: int = 1;
+let b: int;
 do 
-	let _a11 : int = 3;
-	let _a12 : array[1] of int;
-  let _a13 : int = 1;
-	let _a14 : int = foo(_a11, _a13);
-	while (i < 3) 
-	do
-		for (index in 1..100)
-		do 
-			if (j < 3)
-				_a11 = 4;
-			elsif
-				_a13 = 5;
-			else
-				_a13 = 6;
+	if (a == 3) do
+		a = 4;
+	done
+	elsif (a == 2) do
+		a = 4;
+	done
+	elsif (a == 5) do
+		a = 5;
+	done
+	else do
+		if (a * 2 == 10) do
+			a = a * 2;
 		done
+		a = 4;
 	done
 done
