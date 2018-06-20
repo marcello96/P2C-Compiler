@@ -120,12 +120,6 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssignment(@NotNull P2CParser.AssignmentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link P2CParser#start}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStart(@NotNull P2CParser.StartContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link P2CParser#blockElement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

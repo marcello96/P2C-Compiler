@@ -12,22 +12,12 @@ globalDefinitions
 	:	(varDeclaration SEMICOLON | funDefinition)*
 	;
 
-start //do testow
-	:	varDeclaration SEMICOLON
-	|	expression SEMICOLON
-	| assignment SEMICOLON
-	|	funDefinition
-	| loopDefinition
-	| ifDefinition
-	;
-
-
 varDeclaration 
 	: LET parameterGroup (ASSIGN constant)?
 	;
 
 assignment
- : IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)? ASSIGN expression
+ : IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)* ASSIGN expression
  ;
 	
 parameterGroup
@@ -48,7 +38,7 @@ primitiveType
 
 	
 array
-	: ARRAY LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET OF
+	: ARRAY (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)+ OF
 	;	
 	
 arrayType

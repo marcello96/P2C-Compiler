@@ -2,11 +2,7 @@ package com.compilers.P2C_Compiler;
 
 
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -49,26 +45,11 @@ public class App
 	  System.out.println(_command);
 	  printDrink(_command);
 	}
-    @SuppressWarnings("deprecation")
     public static void main( String[] args ) throws IOException, URISyntaxException
     {
       String input = Files.lines(Paths.get("Example.p2c"))
             .collect(Collectors.joining("\n"));
       doTest(input);
       
-       /*doTest(    "fun foo(n : int, result : int) -> int\n" 
-           +"do\r\n"  
-           +"  return n;\n" 
-           +"done\n"
-           + "let a : int;\n"
-           + "let b : int;\n"
-      		+ "do\n"
-          + "if (a == 3 and !(b == a)) do\n"
-          + "\ta = 2;\n"
-          + "done\n"
-          + "else do\n"
-          + "\ta = 4;\n"
-          + "done\n"
-      		+ "done\n");*/
     }
 }

@@ -2,7 +2,6 @@ package com.compilers.P2C_Compiler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

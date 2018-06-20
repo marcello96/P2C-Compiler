@@ -7,11 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 import com.compilers.P2C_Compiler.P2CParser;
@@ -21,7 +19,8 @@ import com.compilers.P2C_Compiler.P2CParser;
 public class MyVisitor extends P2CBaseVisitor<String> {
 	private Map<String, Variable> variables;
 	private Map<String, FunctionSpec> functions;
-	private boolean isInFunctionDefinition = false;
+	@SuppressWarnings("unused")
+  private boolean isInFunctionDefinition = false;
 	private FileWriter writer;
 	
 	public MyVisitor() {
@@ -116,14 +115,26 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	@Override 
 	public String visitAssignment(@NotNull P2CParser.AssignmentContext ctx) {
 	  String ident = ctx.IDENT().getText();
+	  Variable var = variables.get(ident);
 	  StringBuilder result = new StringBuilder();
-	  result.append(ident);
-	  if (ctx.LEFT_SQ_BRACKET() != null && ctx.RIGHT_SQ_BRACKET() != null) {
-	    //checkContainFunction(ident);
-	    result.append("[")
-	          .append(ctx.INTEGER_CONSTANT().getText())
-	          .append("]");
+	  result.append(var.getIdent());
+	  
+	  if (var.isArray()) {
+	    try {
+	      List<Integer> index = ctx.INTEGER_CONSTANT().stream()
+	          .map(e -> Integer.parseInt(e.getText()))
+	          .collect(Collectors.toList());
+	      
+	      var.compareWith(index);
+	      
+	      result.append(index.stream().map(e -> "[" + e + "]").collect(Collectors.joining()));
+	    }
+	    catch (Exception e) {
+        throw new ParseCancellationException(e.getMessage());
+      }
+	    
 	  }
+	  
 	  checkContainVariable(ident,ctx);
 	  result.append(" ")
 	        .append(ctx.ASSIGN().getText())
@@ -273,10 +284,14 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		Variable var = new Variable(ident, Type.valueOf(primitiveType.toUpperCase()));
 		
 		if(ctx.type().array() != null) {
-			int size = Integer.parseInt(ctx.type().array().INTEGER_CONSTANT().getText());
-			
 			var.setArray(true);
+			List<Integer> size = ctx.type().array().INTEGER_CONSTANT()
+                                     .stream()
+                                     .map(e -> Integer.parseInt(e.getText()))
+                                     .collect(Collectors.toList());
 			var.setSize(size);
+                                    
+                                    
 		}
 		
 		return var;
@@ -298,7 +313,8 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	    return false;
 	}
 	
-	private boolean checkContainFunction(String key, ParserRuleContext ctx) {
+	@SuppressWarnings("unused")
+  private boolean checkContainFunction(String key, ParserRuleContext ctx) {
 	    if (!functions.containsKey(key)) {
 			throw genParseError(ctx, "Function \"" 
 						+ key + "\" cannot be resolved to a function\n");
