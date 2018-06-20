@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Built-By: minhn
-Build-Jdk: 9.0.4
+Built-By: Marcin_room
+Build-Jdk: 1.8.0_101
 Created-By: Maven Integration for Eclipse
 

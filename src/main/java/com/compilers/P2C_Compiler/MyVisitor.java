@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+
 import com.compilers.P2C_Compiler.P2CParser;
 
 
@@ -45,7 +48,32 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		
 		return "";
 	}
+	
 
+	@Override 
+	public String visitGlobalDefinitions(@NotNull P2CParser.GlobalDefinitionsContext ctx) {
+		return collectStringFromChilds(ctx, ctx.getChildCount() -1);
+	}
+	
+	@Override
+	public String visitBlockWithoutReturn(@NotNull P2CParser.BlockWithoutReturnContext ctx) {
+		return collectStringFromChilds(ctx, ctx.getChildCount() ); 
+	}
+	
+	@Override
+	public String visitBlockElement(@NotNull P2CParser.BlockElementContext ctx) {
+		return collectStringFromChilds(ctx, ctx.getChildCount()); 
+	}
+	
+	@Override 
+	public String visitBlock(@NotNull P2CParser.BlockContext ctx) { 
+		return collectStringFromChilds(ctx, ctx.getChildCount());
+	}
+
+	@Override
+	public String visitReturnStatement(@NotNull P2CParser.ReturnStatementContext ctx) {
+		return "return " + visit(ctx.expression()) + ";\r\n";
+	}
 	
 	@Override
 	public String visitVarDeclaration(@NotNull P2CParser.VarDeclarationContext ctx) {
@@ -56,9 +84,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 		
 			result = variable + " = " + assignment + ";\n"; 
 		} else
-
 			result = variable + ";\n";
-		
 
 		return result;
 	}
@@ -82,11 +108,6 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 
 		return var.toString();
 	}
-	
-	
-	public String visitBlockWithoutReturn(@NotNull P2CParser.BlockWithoutReturnContext ctx) { 
-	  return visitChildren(ctx); 
-	}
  
 	//To Change
 	@Override 
@@ -95,7 +116,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	}
 	
 	@Override public String visitOperators(@NotNull P2CParser.OperatorsContext ctx) { 
-    return OperatorMapping.map(ctx.getText());
+		return OperatorMapping.map(ctx.getText());
   }
   
   @Override 
@@ -115,6 +136,30 @@ public class MyVisitor extends P2CBaseVisitor<String> {
      result.append(visit(ctx.expression(1)));
      
      return result.toString();
+  }
+  
+  @Override
+  public String visitFunDesignator(@NotNull P2CParser.FunDesignatorContext ctx) {
+	  String funIdent = ctx.identifier().getText();
+	  List<String> params = ctx.argumentList() != null ?
+          ctx.argumentList().expression().stream()
+                                         .map(ex -> visit(ex))
+                                         .collect(Collectors.toList()) 
+          : Collections.emptyList();
+                                         
+      if(functions.containsKey(funIdent)){
+    	  FunctionSpec fun = functions.get(funIdent);
+    	  if(fun.getParams().size() != params.size())
+    		  System.err.println("Error: function \"" + funIdent 
+    				  +"\" is defined with different number of parameters");
+      } else
+    	  System.err.println("Error: function \"" + funIdent 
+				  +"\" is not declared");
+  
+	  String funDefString = params.stream()
+								  .collect(Collectors.joining(", "));
+	  
+	  return funIdent + "(" + funDefString + ")";
   }
   
   //To change
@@ -162,12 +207,22 @@ public class MyVisitor extends P2CBaseVisitor<String> {
         } else
         	functions.put(funIdent, funSpec);
         
-        String block = super.visitFunDefinition(ctx);
+        String block = visit(ctx.block());
         
 		return funSpec.toString() + " {\r\n" + block + "\r\n}\r\n";
 	}
 	
 	/**************************** PRIVATE METHODS *****************************/
+	private String collectStringFromChilds(RuleContext ctx, int childNo) {
+		StringBuilder builder = new StringBuilder();
+		for(int i=0; i<childNo; ++i) {
+			if(ctx.getChild(i) instanceof TerminalNodeImpl)
+				continue;
+			builder.append(visit(ctx.getChild(i)));
+		}
+		
+		return builder.toString();
+	}
 	private Variable getVariableFromParameterGroup(P2CParser.ParameterGroupContext ctx) {
 		String ident = ctx.identifier().getText();
 		String primitiveType = ctx.type().primitiveType().getText();
