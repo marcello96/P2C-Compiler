@@ -156,6 +156,12 @@ public interface P2CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarDeclaration(@NotNull P2CParser.VarDeclarationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link P2CParser#printDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrintDefinition(@NotNull P2CParser.PrintDefinitionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link P2CParser#funDesignator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -230,6 +230,42 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	  return funIdent + "(" + funDefString + ")";
   }
   
+  @Override 
+  public String visitPrintDefinition(@NotNull P2CParser.PrintDefinitionContext ctx) { 
+    StringBuilder result = new StringBuilder();
+    if (ctx.PRINT() != null)
+      result.append(ctx.PRINT().getText());
+    else result.append(ctx.PRINTLN().getText());
+    
+    result.append("(\"");
+    int numIdent = ctx.IDENT().size();
+    for (int i = 0; i < numIdent; i++) {
+      String ident = ctx.IDENT(i).getText();
+      if (!variables.containsKey(ident))
+        throw genParseError(ctx, "Variable \"" + ident 
+            + "\" cannot be resolved to a variable\n");
+      Variable var = variables.get(ident);
+      String typeMapping = TypePrintMapping.map(var.getType());
+      result.append(typeMapping)
+            .append(",");
+    }
+    if (result.charAt(result.length() - 1) == ',')
+      result.setLength(result.length() - 1);
+    result.append("\", ");
+    for (int i = 0; i < numIdent; i++) {
+      String ident = ctx.IDENT(i).getText();
+      if (!variables.containsKey(ident))
+        throw genParseError(ctx, "Variable \"" + ident 
+            + "\" cannot be resolved to a variable\n");
+      result.append(ident)
+            .append(",");
+    }
+    if (result.charAt(result.length() - 1) == ',')
+      result.setLength(result.length() - 1);
+    result.append(");\n");
+    return result.toString();
+  }
+  
   //To change
   @Override 
   public String visitIfDefinition(@NotNull P2CParser.IfDefinitionContext ctx) { 

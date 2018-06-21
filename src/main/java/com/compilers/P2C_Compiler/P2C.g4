@@ -126,8 +126,13 @@ blockElement
 	| assignment SEMICOLON			
 	| whileDefinition
 	| forDefinition						
-	| ifDefinition 							
+	| ifDefinition 						
+	| printDefinition	SEMICOLON
 	;	
+	
+printDefinition
+	: (PRINT | PRINTLN) LEFT_BRACKET IDENT (COMMA IDENT)* RIGHT_BRACKET
+	;
 	
 returnStatement
 	:	RETURN expression SEMICOLON
@@ -176,6 +181,9 @@ OF : 'of' ;
 ARRAY : 'array' ;
 RECORD : 'record' ;
 END : 'end' ;
+
+PRINT: 'print' ;
+PRINTLN: 'println' ;
 
 UNDERLINE : '_' ;
 LEFT_SQ_BRACKET : '[' ;

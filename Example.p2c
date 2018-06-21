@@ -1,5 +1,5 @@
 let a: int = 1;
-let b: int;
+let b: double;
 let c: int;
 let d: array [3][4] of double;
 
@@ -39,5 +39,7 @@ do
 		while(x<5) do
 		done
 	done
+	print(a);
+	println(b, c);
 	
 done
