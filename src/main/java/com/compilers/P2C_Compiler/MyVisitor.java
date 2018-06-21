@@ -253,30 +253,45 @@ public class MyVisitor extends P2CBaseVisitor<String> {
     
     
     result.append("(\"");
-    int numIdent = ctx.IDENT().size();
-    for (int i = 0; i < numIdent; i++) {
-      String ident = ctx.IDENT(i).getText();
-      if (!variables.containsKey(ident))
-        throw genParseError(ctx, "Variable \"" + ident 
-            + "\" cannot be resolved to a variable\n");
+    int numParam = ctx.printParam().size();
+    String typeMapping;
+    for (int i = 0; i < numParam; i++) {
+      if(ctx.printParam(i).IDENT() != null) {
+    	  String ident = ctx.printParam(i).IDENT().getText();
+          if (!variables.containsKey(ident))
+            throw genParseError(ctx, "Variable \"" + ident 
+                + "\" cannot be resolved to a variable\n");
+          
+          Variable var = variables.get(ident);
+          typeMapping = TypePrintMapping.map(var.getType());
+      } else {
+    	  typeMapping = TypePrintMapping.map(Type.STRING);
+      }
       
-      Variable var = variables.get(ident);
-      String typeMapping = TypePrintMapping.map(var.getType());
-      result.append(typeMapping)
-            .append(",");
+      result.append(typeMapping);
     }
-    if (result.charAt(result.length() - 1) == ',')
-      result.setLength(result.length() - 1);
+
     if(isPrintln)
     	result.append("\\n");
     result.append("\", ");
-    for (int i = 0; i < numIdent; i++) {
-      String ident = ctx.IDENT(i).getText();
-      if (!variables.containsKey(ident))
-        throw genParseError(ctx, "Variable \"" + ident 
-            + "\" cannot be resolved to a variable\n");
-      result.append(ident)
+    for (int i = 0; i < numParam; i++) {
+    	if(ctx.printParam(i).IDENT() != null) {
+      	  String ident = ctx.printParam(i).IDENT().getText();
+      	  result.append(ident);
+      	  if(ctx.printParam(i).INTEGER_CONSTANT().size() > 0) {
+	    	  List<Integer> indices = ctx.printParam(i).INTEGER_CONSTANT().stream()
+	    	          .map(e -> Integer.parseInt(e.getText()))
+	    	          .collect(Collectors.toList());
+	    	  checkContainArray(ident, indices, ctx);
+		      result.append(indices.stream().map(e -> "[" + e + "]").collect(Collectors.joining()));
+	      } else
+	    	  checkContainVariable(ident,ctx);
+	      
+	            result.append(",");
+    	} else {
+    		result.append(ctx.printParam(i).TEXT().getText())
             .append(",");
+    	}
     }
     if (result.charAt(result.length() - 1) == ',')
       result.setLength(result.length() - 1);

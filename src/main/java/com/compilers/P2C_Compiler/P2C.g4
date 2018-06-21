@@ -136,7 +136,12 @@ blockElement
 	;	
 	
 printDefinition
-	: (PRINT | PRINTLN) LEFT_BRACKET IDENT (COMMA IDENT)* RIGHT_BRACKET
+	: (PRINT | PRINTLN) LEFT_BRACKET printParam (COMMA printParam)* RIGHT_BRACKET
+	;
+	
+printParam
+	: IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)* 
+	| TEXT
 	;
 	
 returnStatement
