@@ -90,8 +90,15 @@ public class Variable {
   @Override
 	public String toString() {
 		String array = isArray ? size.stream().map(e -> "[" + e + "]").collect(Collectors.joining()) : "";
-		
-		String returnType = type.toString().equals(Type.STRUCT.toString()) ? structName : type.toString().toLowerCase(); 
+		String returnType = "";
+		if(type.toString().equals(Type.STRUCT.toString())) {
+			returnType =  "struct " + structName; 
+		} else if(type.toString().equals(Type.BOOL.toString())) {
+			returnType = Type.INT.toString().toLowerCase();
+		} else if(type.toString().equals(Type.STRING.toString())) {
+			return "char " + ident + "[]"; 
+		} else
+			returnType = type.toString().toLowerCase();
 		return returnType + " " + ident + array ;
 	}
 }

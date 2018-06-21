@@ -88,8 +88,8 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	public String visitVarDeclaration(@NotNull P2CParser.VarDeclarationContext ctx) {
 		String variable = visit(ctx.parameterGroup());
 		String result;
-		if(ctx.constant() !=  null) {
-			String assignment = ctx.constant().getText();
+		if(ctx.expression() !=  null) {
+			String assignment = visit(ctx.expression());
 		
 			result = variable + " = " + assignment + ";\n"; 
 		} else
@@ -143,7 +143,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	      result.append(index.stream().map(e -> "[" + e + "]").collect(Collectors.joining()));
 	    }
 	    catch (Exception e) {
-        throw new ParseCancellationException(e.getMessage());
+	    	throw genParseError(ctx,e.getMessage());
       }
 	    
 	  }
@@ -177,7 +177,20 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	  }
 	  if (ctx.IDENT() != null) {
 	      String ident = ctx.IDENT().getText();
-	      checkContainVariable(ident,ctx);
+	      StringBuilder result = new StringBuilder();
+	      result.append(ident);
+	      if(ctx.INTEGER_CONSTANT().size() > 0) {
+	    	  List<Integer> indices = ctx.INTEGER_CONSTANT().stream()
+	    	          .map(e -> Integer.parseInt(e.getText()))
+	    	          .collect(Collectors.toList());
+	    	  checkContainArray(ident, indices, ctx);
+		      result.append(indices.stream().map(e -> "[" + e + "]").collect(Collectors.joining()));
+	      } else
+	    	  checkContainVariable(ident,ctx);
+	      return result.toString();
+	  }
+	  if(ctx.stringText() != null) {
+		  return ctx.stringText().getText();
 	  }
 	  return ctx.getText();
 	}
@@ -233,9 +246,11 @@ public class MyVisitor extends P2CBaseVisitor<String> {
   @Override 
   public String visitPrintDefinition(@NotNull P2CParser.PrintDefinitionContext ctx) { 
     StringBuilder result = new StringBuilder();
-    if (ctx.PRINT() != null)
-      result.append(ctx.PRINT().getText());
-    else result.append(ctx.PRINTLN().getText());
+    boolean isPrintln = false;
+    result.append("printf");
+    if (ctx.PRINTLN() != null)
+    	isPrintln = true;
+    
     
     result.append("(\"");
     int numIdent = ctx.IDENT().size();
@@ -244,6 +259,7 @@ public class MyVisitor extends P2CBaseVisitor<String> {
       if (!variables.containsKey(ident))
         throw genParseError(ctx, "Variable \"" + ident 
             + "\" cannot be resolved to a variable\n");
+      
       Variable var = variables.get(ident);
       String typeMapping = TypePrintMapping.map(var.getType());
       result.append(typeMapping)
@@ -251,6 +267,8 @@ public class MyVisitor extends P2CBaseVisitor<String> {
     }
     if (result.charAt(result.length() - 1) == ',')
       result.setLength(result.length() - 1);
+    if(isPrintln)
+    	result.append("\\n");
     result.append("\", ");
     for (int i = 0; i < numIdent; i++) {
       String ident = ctx.IDENT(i).getText();
@@ -416,6 +434,22 @@ public class MyVisitor extends P2CBaseVisitor<String> {
 	  else
 	    return false;
 	}
+	
+	private boolean checkContainArray(String key, List<Integer> indices, ParserRuleContext ctx) {
+		  if (!variables.containsKey(key)) {
+			  throw genParseError(ctx, "Variable \"" + key 
+						+ "\" cannot be resolved to a variable\n");
+		  } else {
+			  Variable var = variables.get(key);
+			  try {
+				  var.compareWith(indices);
+			  } catch(Exception e) {
+				  throw genParseError(ctx, e.getMessage());
+			  }
+		  }
+		  
+		    return false;
+		}
 	
 	@SuppressWarnings("unused")
   private boolean checkContainFunction(String key, ParserRuleContext ctx) {

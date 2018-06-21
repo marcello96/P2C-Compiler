@@ -19,7 +19,7 @@ recordDefinition
 recordType: IDENT;
 
 varDeclaration 
-	: LET parameterGroup (ASSIGN constant)?
+	: LET parameterGroup (ASSIGN expression)?
 	;
 
 assignment
@@ -94,8 +94,13 @@ operators
  | constant  																
  | funDesignator														
  | (TRUE | FALSE) 													
- | IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)? 													
+ | IDENT (LEFT_SQ_BRACKET INTEGER_CONSTANT RIGHT_SQ_BRACKET)* 
+ | stringText													
  | NULL            													
+ ;
+ 
+ stringText
+ : TEXT
  ;
 	
 // function definition
@@ -224,10 +229,11 @@ SEMICOLON: ';';
 DOUBLE_DOT: '..';
 
 
-
 IDENT
 	:	('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
 	;
+	
+TEXT : '"' ~('"')* '"';
 
 FLOATING_CONSTANT
     :   NONZERO_DIGIT DIGIT_SEQUENCE? '.' DIGIT_SEQUENCE
@@ -293,8 +299,6 @@ HEXADECIMAL_DIGIT
     :   [0-9a-fA-F]
 	;
 	
-
-
 
 WHITESPACE : ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ -> skip ;
 

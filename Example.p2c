@@ -1,6 +1,6 @@
 let a: int = 1;
 let b: double;
-let c: int;
+let c: string = "Michal";
 let d: array [3][4] of double;
 
 fun foo(a:int, b:int) -> int
@@ -12,8 +12,10 @@ myStruct = record
 	let first: int;
 	let second: double;
 end;
-let g: double;
+
 let f: myStruct;
+
+# single comment
 do 
 	if (a == 3) do
 		c = 4;
@@ -43,3 +45,7 @@ do
 	println(b, c);
 	
 done
+
+##
+multiline comment
+##
